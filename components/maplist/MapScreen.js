@@ -4,7 +4,6 @@ import { MapView } from "expo";
 
 // https://github.com/react-community/react-native-maps
 export default class MapScreen extends React.Component {
-
   render() {
     return (
         <MapView

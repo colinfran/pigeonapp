@@ -1,21 +1,20 @@
 import React from "react";
 
 // premade components
-import { View, Text, Button } from "react-native"; // built-in components
+import { View, Text, Button, Platform } from "react-native"; // built-in components
 import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs"; //https://reactnavigation.org/docs/en/material-bottom-tab-navigator.html
-import Ionicons from "react-native-vector-icons/Ionicons"; //https://ionicons.com/
+import { Ionicons } from '@expo/vector-icons'; //https://ionicons.com/
 
 // our handmade components
-import MapScreen from "./components/MapScreen";
-import ListScreen from "./components/ListScreen";
+import MapList from "./components/MapList";
 import ProfileScreen from "./components/ProfileScreen";
 import MoreScreen from "./components/MoreScreen";
 
 //navbar with 4 different screens
 export default createMaterialBottomTabNavigator(
   {
-    MapScreen: { screen: MapScreen },
-    ListScreen: { screen: ListScreen },
+    MapList: { screen: MapList },
+    // ListScreen: { screen: ListScreen },
     ProfileScreen: { screen: ProfileScreen },
     MoreScreen: { screen: MoreScreen }
   },
@@ -25,14 +24,30 @@ export default createMaterialBottomTabNavigator(
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === "MapScreen") {
-          iconName = `ios-map${focused ? "" : "-outline"}`;
+        if (routeName === "MapList") {
+          if (Platform.OS === "ios"){
+            iconName = `ios-alert${focused ? "" : "-outline"}`;
+          }else{
+            iconName = `md-alert`;
+          }
         } else if (routeName === "ListScreen") {
-          iconName = `ios-list${focused ? "" : "-outline"}`;
+          if (Platform.OS === "ios"){
+            iconName = `ios-list${focused ? "" : "-outline"}`;
+          }else{
+            iconName = `md-list`;
+          }
         } else if (routeName === "ProfileScreen") {
-          iconName = `ios-contact${focused ? "" : "-outline"}`;
+          if (Platform.OS === "ios"){
+            iconName = `ios-contact${focused ? "" : "-outline"}`;
+          }else{
+            iconName = `md-list`;
+          }
         } else if (routeName === "MoreScreen") {
-          iconName = `ios-more${focused ? "" : "-outline"}`;
+          if (Platform.OS === "ios"){
+            iconName = `ios-more${focused ? "" : "-outline"}`;
+          }else{
+            iconName = `md-more`;
+          }
         }
         return <Ionicons name={iconName} size={27} color={"#ffff"} />;
       }
@@ -42,6 +57,6 @@ export default createMaterialBottomTabNavigator(
     },
     barStyle: { backgroundColor: "#33ADFF" },
     animationEnabled: true,
-    initialRouteName: "MapScreen"
+    initialRouteName: "MapList"
   }
 );

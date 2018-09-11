@@ -1,7 +1,7 @@
 # finalproject
 final project
 
-_Directions_
+__Directions__
 1) clone repository and cd into the directory
 2) `npm install` (this will install all node modules for this project)
 3) `npm install expo-cli --global` (skip if you have already done this)
