@@ -1,9 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View, Dimensions, ListView, FlatList } from "react-native";
+import { SafeAreaView } from 'react-native';
 
 export default class MoreScreen extends React.Component {
   render() {
     return (
+      <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={styles.container}>
         <FlatList
           data={[
@@ -23,6 +25,7 @@ export default class MoreScreen extends React.Component {
           renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
         />
       </View>
+      </SafeAreaView>
     );
   }
 }

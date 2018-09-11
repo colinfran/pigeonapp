@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { SafeAreaView } from 'react-native';
 
 export default class ProfileScreen extends Component {
   render() {
     return (
+      <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={styles.container}>
         <View style={styles.header} />
         <Image
@@ -29,6 +31,7 @@ export default class ProfileScreen extends Component {
           </View>
         </View>
       </View>
+      </SafeAreaView>
     );
   }
 }

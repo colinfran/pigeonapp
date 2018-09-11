@@ -1,0 +1,36 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/Cellar/yarn/1.2.1/libexec/bin/yarn.js add react-native-floating-action
+
+PATH: 
+  /Users/gsantomeosun/.rvm/gems/ruby-2.4.1/bin:/Users/gsantomeosun/.rvm/gems/ruby-2.4.1@global/bin:/Users/gsantomeosun/.rvm/rubies/ruby-2.4.1/bin:/Users/gsantomeosun/.fastlane/bin:/Users/gsantomeosun/.sdkman/candidates/gradle/current/bin:/Users/gsantomeosun/.yarn/bin:/Library/Frameworks/Python.framework/Versions/3.5/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/sbin:/usr/local/MacGPG2/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/Applications/Postgres.app/Contents/Versions/latest/bin:/Users/gsantomeosun/Library/Android/sdk/tools:/Users/gsantomeosun/Library/Android/sdk/platform-tools:/Users/gsantomeosun/.rvm/bin
+
+Yarn version: 
+  1.2.1
+
+Node version: 
+  6.9.4
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "main": "node_modules/expo/AppEntry.js",
+    "private": true,
+    "dependencies": {
+      "expo": "^24.0.0",
+      "react": "16.0.0",
+      "react-native": "https://github.com/expo/react-native/archive/sdk-24.0.0.tar.gz"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: read ETIMEDOUT
+      at exports._errnoException (util.js:1022:11)
+      at TLSWrap.onread (net.js:569:26)

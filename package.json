@@ -13,6 +13,7 @@
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-29.0.0.tar.gz",
     "react-native-circle-button": "^1.0.9",
+    "react-native-floating-action": "^1.13.0",
     "react-native-maps": "^0.21.0",
     "react-native-paper": "^2.0.1",
     "react-native-parallax-scroll-view": "^0.21.3",

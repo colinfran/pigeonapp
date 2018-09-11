@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import {RecyclerListView,DataProvider,LayoutProvider} from "recyclerlistview";
+import { SafeAreaView } from 'react-native';
 
 //https://github.com/Flipkart/recyclerlistview#guides
 
@@ -20,10 +21,14 @@ export class CellContainer extends React.Component {
   }
   render() {
     return (
+      <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+
       <View {...this.props}>
         {this.props.children}
         <Text>Cell Id: {this._containerId}</Text>
       </View>
+      </SafeAreaView>
+
     );
   }
 }

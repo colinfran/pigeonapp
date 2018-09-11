@@ -13,36 +13,30 @@ import MoreScreen from "./components/MoreScreen";
 //navbar with 4 different screens
 export default createMaterialBottomTabNavigator(
   {
-    MapList: { screen: MapList },
-    // ListScreen: { screen: ListScreen },
-    ProfileScreen: { screen: ProfileScreen },
-    MoreScreen: { screen: MoreScreen }
+    // emergency, profile, more are labels for each bottom tab in the nav
+    Emergencies: { screen: MapList },
+    Profile: { screen: ProfileScreen },
+    More: { screen: MoreScreen }
   },
   {
-    // set icon svg & icon style if focused
+    // set icon svg & icon style if focused (ios / android specific icons)
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, tintColor }) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === "MapList") {
+        if (routeName === "Emergencies") {
           if (Platform.OS === "ios"){
             iconName = `ios-alert${focused ? "" : "-outline"}`;
           }else{
             iconName = `md-alert`;
           }
-        } else if (routeName === "ListScreen") {
-          if (Platform.OS === "ios"){
-            iconName = `ios-list${focused ? "" : "-outline"}`;
-          }else{
-            iconName = `md-list`;
-          }
-        } else if (routeName === "ProfileScreen") {
+        } else if (routeName === "Profile") {
           if (Platform.OS === "ios"){
             iconName = `ios-contact${focused ? "" : "-outline"}`;
           }else{
-            iconName = `md-list`;
+            iconName = `md-contact`;
           }
-        } else if (routeName === "MoreScreen") {
+        } else if (routeName === "More") {
           if (Platform.OS === "ios"){
             iconName = `ios-more${focused ? "" : "-outline"}`;
           }else{
@@ -50,13 +44,18 @@ export default createMaterialBottomTabNavigator(
           }
         }
         return <Ionicons name={iconName} size={27} color={"#ffff"} />;
-      }
+      },
+
+
+      barStyle: { backgroundColor: "#33ADFF" },
+      animationEnabled: true,
+      initialRouteName: "MapList",
+      activeTintColor: "white",
+      // labeled: false,
+      shifting: true,
     }),
-    tabBarOptions: {
-      showIcon: true
-    },
-    barStyle: { backgroundColor: "#33ADFF" },
-    animationEnabled: true,
-    initialRouteName: "MapList"
+
+
+
   }
 );
