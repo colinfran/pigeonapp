@@ -22,7 +22,7 @@ export default class InfoModal extends React.Component {
            <Text>{this.props.dataClick.description}</Text>
            <Text>Lat: {this.props.dataClick.coordinates.latitude}</Text>
            <Text>Long: {this.props.dataClick.coordinates.longitude}</Text>
-
+           <Text>{this.props.dataClick.town}, {this.props.dataClick.county}, USA</Text>
            <Button onPress={this.props.toggle}
              title="Close"
              >

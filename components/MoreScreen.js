@@ -1,131 +1,176 @@
 import React from "react";
-import { StyleSheet, Text, View, Dimensions, ListView, FlatList, Platform, StatusBar, ScrollView, Button } from "react-native";
+import { StyleSheet, Text, View, Dimensions, ListView, FlatList, Platform, StatusBar, ScrollView, Button, Image, Alert} from "react-native";
 import { SafeAreaView } from 'react-native';
-import {SettingsDividerShort, SettingsDividerLong, SettingsEditText, SettingsCategoryHeader, SettingsSwitch, SettingsPicker} from 'react-native-settings-components';
-import DialogAndroid from 'react-native-dialogs';
+import { Badge } from 'react-native-elements';
 import { logout } from '../api/auth'
+import SettingsList from 'react-native-settings-list';
+
+
 
 export default class MoreScreen extends React.Component {
-  constructor(props) {
-        super(props);
-        this.onLogout = this.onLogout.bind(this);
-        this.state = {
-            firstname: '',
-            lastname: '',
-            email: '',
-            allowPushNotifications: false,
-        };
-        if(Platform.OS === 'ios') {
-            StatusBar.setBarStyle('light-content');
-        } else {
-            StatusBar.setBackgroundColor('#1B0887');
-        }
-    }
-    async onLogout() {
-       await logout();
-       this.props.navigation.navigate('Login');
-     }
+  constructor(props){
+    super(props);
+    this.onLogout = this.onLogout.bind(this);
+    this.onValueChange = this.onValueChange.bind(this);
+    this.verifyLogout = this.verifyLogout.bind(this);
+
+    this.state = {
+      email:"email@email.com",
+      displayName: "Bob",
+      numPosts: 0,
+      numRanked: 0,
+      notificationsValue: false
+    };
+  }
+
+  static navigationOptions = {
+    title: 'More',
+    headerStyle: {
+      backgroundColor: '#33ADFF',
+    },
+    headerTintColor: '#fff',
+
+  };
+
+  verifyLogout(){
+    Alert.alert(
+     'Are you sure you want to log out of this app?',
+     'Please pick an option',
+     [
+       {text: 'Cancel', onPress: () => console.warn('NO Pressed'), style: 'cancel'},
+       {text: 'Logout', onPress: this.onLogout},
+     ]
+   );
+  }
+
+  async onLogout() {
+     await logout();
+     this.props.navigation.navigate('Login');
+   }
+
+   onValueChange(value){
+     console.log('allow push notifications:', value);
+     this.setState({notificationsValue: value});
+   }
+
+  render() {
+    return (
+      <View style={{flex:1}}>
+        <View style={{flex:1, marginTop:25}}>
+          <SettingsList>
+            <SettingsList.Header headerText='Helpful Info' headerStyle={{}}/>
+            <SettingsList.Item
+              title='What to do if theres an Emergency?'
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                </View>
+              }
+              />
+            <SettingsList.Item
+              title='What to do if theres an Emergency?'
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                </View>
+              }
+              />
 
 
-    render() {
-        return <View style={{flex: 1}}>
-            <View style={[{padding: 16, backgroundColor: colors.blueGem},
-                (Platform.OS === 'ios') ? {paddingTop: 30, justifyContent: 'center', flexDirection: 'row'} : null]}>
-                <Text style={{color: colors.white, fontWeight: 'bold', fontSize: 18}}></Text>
-            </View>
-            <ScrollView style={{flex: 1, backgroundColor: (Platform.OS === 'ios') ? colors.iosSettingsBackground : colors.white}}>
-                <SettingsCategoryHeader title={'My Account'} textStyle={(Platform.OS === 'android') ? {color: colors.monza} : null}/>
-                <SettingsDividerLong android={false}/>
-                <SettingsEditText
-                    title="Email"
-                    negativeButtonTitle={'Cancel'}
-                    positiveButtonTitle={'Save'}
-                    onSaveValue={(value) => {
-                        console.log('Email:', value);
-                        this.setState({
-                            email: value
-                        });
-                    }}
+          	<SettingsList.Header
+              headerText='User Information'
+              headerStyle={{marginTop:25}}
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                </View>
+              }/>
+            <SettingsList.Item
+              titleInfo={this.state.email}
+              hasNavArrow={false}
+              title='Email'/>
+            <SettingsList.Item
+              titleInfo={this.state.displayName}
+              itemWidth={50}
+              title='Display Name'
+              onPress={() => Alert.alert('Icon Example Pressed')}
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                </View>
+              }
+            />
 
-                    value={this.state.email}
-                    dialogAndroidProps={{
-                        widgetColor: colors.monza,
-                        positiveColor: colors.monza,
-                        negativeColor: colors.monza,
-                    }}
-                />
-                <SettingsDividerShort/>
-                <SettingsEditText
-                    title="First Name"
-                    dialogDescription={'Enter your first name.'}
-                    valuePlaceholder="..."
-                    negativeButtonTitle={'Cancel'}
-                    positiveButtonTitle={'Save'}
-                    onSaveValue={(value) => {
-                        console.log('firstname:', value);
-                        this.setState({
-                            firstname: value
-                        });
-                    }}
-                    value={this.state.firstname}
-                    dialogAndroidProps={{
-                        widgetColor: colors.monza,
-                        positiveColor: colors.monza,
-                        negativeColor: colors.monza,
-                    }}
-                />
-                <SettingsDividerShort/>
-                <SettingsEditText
-                    title="Last Name"
-                    dialogDescription={'Enter your last name.'}
-                    valuePlaceholder="..."
-                    negativeButtonTitle={'Cancel'}
-                    positiveButtonTitle={'Save'}
-                    onSaveValue={(value) => {
-                        console.log('last name:', value);
-                        this.setState({
-                            lastname: value
-                        });
-                    }}
-                    value={this.state.lastname}
-                    dialogAndroidProps={{
-                        widgetColor: colors.monza,
-                        positiveColor: colors.monza,
-                        negativeColor: colors.monza,
-                    }}
-                />
-                <SettingsDividerShort/>
+            <SettingsList.Item
+              title='Emergencies you posted'
+              onPress={() => Alert.alert('Posted Emergencies')}
+              arrowIcon={
+                <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
+                    <Badge
+                      value={this.state.numPosts}
+                      containerStyle={{ backgroundColor: 'lightgrey', marginRight:10 }}
+                      textStyle={{ color: 'black' }}
+                    />
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
 
-                <SettingsDividerLong android={false}/>
-                <SettingsCategoryHeader title={'Notifications'} textStyle={(Platform.OS === 'android') ? {color: colors.monza} : null}/>
-                <SettingsDividerLong android={false}/>
-                <SettingsSwitch
-                    title={'Allow Push Notifications'}
-                    onSaveValue={(value) => {
-                        console.log('allow push notifications:', value);
-                        this.setState({
-                            allowPushNotifications: value
-                        });
-                    }}
-                    value={this.state.allowPushNotifications}
-                    thumbTintColor={(this.state.allowPushNotifications) ? colors.switchEnabled : colors.switchDisabled}
-                />
-                <SettingsDividerLong android={false}/>
-                  <Button
-           title='Logout'
-           onPress={this.onLogout} />
-            </ScrollView>
+                </View>
+              }
+            />
+            <SettingsList.Item
+              title='Emergencies you ranked'
+              onPress={() => Alert.alert('Ranked Emergencies')}
+              arrowIcon={
+                <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
+                    <Badge
+                      value={this.state.numRanked}
+                      containerStyle={{ backgroundColor: 'lightgrey', marginRight:10 }}
+                      textStyle={{ color: 'black' }}
+                    />
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+
+                </View>
+              }
+            />
+          <SettingsList.Header headerText='User Settings' headerStyle={{marginTop:25}}/>
+            <SettingsList.Item
+              titleInfo='Some stuff'
+              title='Stuff about the stuff'
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                </View>
+              }/>
+            <SettingsList.Item title='Settings 1'
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                </View>
+              }
+              />
+            <SettingsList.Item
+              hasNavArrow={false}
+              switchState={this.state.notificationsValue}
+              switchOnValueChange={this.onValueChange}
+              hasSwitch={true}
+              title='Allow Push Notifications'/>
+            <SettingsList.Header headerText='' headerStyle={{marginTop:25}}/>
+            <SettingsList.Item
+              style={{}}
+              title='Logout'
+              onPress={this.verifyLogout}
+              titleStyle={{fontSize:18, fontWeight: 'bold', textDecorationLine:'underline'}}
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{alignSelf:'center'}} source={require('../assets/logout.png')}/>
+                </View>
+              }
+            />
+
+          </SettingsList>
+          <View></View>
+
         </View>
-    }
-
+      </View>
+    );
+  }
 }
-
-const colors = {
-  iosSettingsBackground: 'rgb(235,235,241)',
-  white: '#FFFFFF',
-  monza: '#C70039',
-  switchEnabled: (Platform.OS === 'android') ? '#C70039' : null,
-  switchDisabled: (Platform.OS === 'android') ? '#efeff3' : null,
-  switchOnTintColor: (Platform.OS === 'android') ? 'rgba(199, 0, 57, 0.6)' : null,
-  blueGem: '#33ADFF',
-};

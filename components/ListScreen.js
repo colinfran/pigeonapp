@@ -2,12 +2,14 @@ import React from "react";
 import {StyleSheet, Text, View, Dimensions, TouchableOpacity, Image} from "react-native";
 import {RecyclerListView, DataProvider, LayoutProvider} from "recyclerlistview";
 import {SafeAreaView} from 'react-native';
+import Modal from "react-native-modal";
+import InfoModal from "./InfoModal";
 
 //https://github.com/Flipkart/recyclerlistview#guides
 
 const markerImages = {
-    flood: require('../assets/flood.png'),
-    fire: require('../assets/fire.png'),
+    flood: require('../assets/flood/60.png'),
+    fire: require('../assets/fire/60.png'),
 };
 
 // RECYCLERVIEW CODE
@@ -38,31 +40,53 @@ export default class ListScreen extends React.Component {
       return ViewTypes.FULL;
     }, (type, dim) => {
       dim.width = width;
-      dim.height = 140;
+      dim.height = 100;
     });
     this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
-      dataProvider: dataProvider.cloneWithRows(dataVar)
+      dataProvider: dataProvider.cloneWithRows(dataVar),
+      isModalVisible: false,
+      selectedMarker: {
+        title: "",
+        description: "",
+        type: "fire",
+        coordinates: {
+          latitude: 0,
+          longitude: 0
+        },
+        key: ""
+      }
     };
   }
+
+  _toggleModal = () => {
+    this.setState({
+      isModalVisible: !this.state.isModalVisible,
+    });
+    console.log("Toggle: " + this.state.isModalVisible);
+  };
+
+  _selectedInfo = (data) => {
+    this.setState({
+      selectedMarker: data
+    });
+    this._toggleModal();
+  };
 
   //Given type and data return the view component
   _rowRenderer(type, data) {
     return (
       <TouchableOpacity
         style={styles.container}
-        onPress={() => {
-          console.log(data);
-          alert(JSON.stringify(data));
-        }}>
+        onPress={() => this._selectedInfo(data)}
+        >
           <View style={{flexDirection: "row"}}>
-            <View style={{width: 100, height: 100,justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{width: 100, height: 100,justifyContent: 'center', alignItems: 'center', paddingLeft:20}}>
               <Image source={markerImages[data.type]}/>
             </View>
-            <View style={{flex: 1, justifyContent: 'center'}}>
+            <View style={{flex: 1, justifyContent: 'center', paddingLeft:30}}>
+              <Text style={{fontSize:18}}>{data.title}</Text>
               <Text>Type: {data.type}</Text>
-              <Text>Title: {data.title}</Text>
-              <Text>Description: {data.description}</Text>
               <Text>Lat: {data.coordinates.latitude}</Text>
               <Text>Long: {data.coordinates.longitude}</Text>
             </View>
@@ -73,19 +97,33 @@ export default class ListScreen extends React.Component {
               />
             </View>
           </View>
-
     </TouchableOpacity>)
   }
 
   render() {
     return (
-      <RecyclerListView
-        style={{flex: 1}}
-        layoutProvider={this._layoutProvider}
-        dataProvider={this.state.dataProvider}
-        rowRenderer={this._rowRenderer}
-
-      />);
+      <View style={{flex:1}}>
+        <Modal
+          isVisible={this.state.isModalVisible}
+          onBackdropPress={() =>
+            this.setState({ isModalVisible: !this.state.isModalVisible })
+          }
+          style={{ alignItems: "center" }}
+          hideModalContentWhileAnimating={true}
+        >
+          <InfoModal
+            toggle={this._toggleModal}
+            dataClick={this.state.selectedMarker}
+          />
+        </Modal>
+        <RecyclerListView
+          style={{flex: 1}}
+          layoutProvider={this._layoutProvider}
+          dataProvider={this.state.dataProvider}
+          rowRenderer={this._rowRenderer}
+        />
+      </View>
+    );
   }
 }
 

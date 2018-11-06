@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons'; //https://ionicons.com/
 // our handmade components
 import MapList from "./MapListView";
 // import ProfileScreen from "./components/ProfileScreen";
-import MoreScreen from "../../components/MoreScreen";
+import MoreScreen from "./MoreView";
 
 import AddStack from "./AddView";
 
