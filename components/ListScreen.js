@@ -17,15 +17,6 @@ const ViewTypes = {
   FULL: 0
 };
 
-var dataVar=[{title:"hello1",description:"description1",type: "fire", coordinates:{latitude:38.364239,longitude:-122.72249},key:"1ab"},
-          {title:"hello2",description:"description2",type: "flood", coordinates:{latitude:38.346909,longitude:-122.675305},key:"2ab"},
-          {title:"hello3",description:"description3",type: "fire", coordinates:{latitude:37.798319,longitude:-122.417713},key:"3as"},
-          {title:"hello4",description:"description4",type: "flood",coordinates:{latitude:37.792986,longitude:-122.421484},key:"4b"},
-          {title:"hello5",description:"description5",type: "fire", coordinates:{latitude:37.765151,longitude:-122.429141},key:"5ab"},
-          {title:"hello6",description:"description6",type: "flood", coordinates:{latitude:37.774211,longitude:-122.401443},key:"6a23"}];
-
-
-
 export default class ListScreen extends React.Component {
   constructor(args) {
     super(args);
@@ -44,7 +35,7 @@ export default class ListScreen extends React.Component {
     });
     this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
-      dataProvider: dataProvider.cloneWithRows(dataVar),
+      dataProvider: dataProvider.cloneWithRows(this.props.data),
       isModalVisible: false,
       selectedMarker: {
         title: "",
@@ -55,7 +46,8 @@ export default class ListScreen extends React.Component {
           longitude: 0
         },
         key: ""
-      }
+      },
+      admin: false
     };
   }
 
@@ -73,6 +65,10 @@ export default class ListScreen extends React.Component {
     this._toggleModal();
   };
 
+  capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   //Given type and data return the view component
   _rowRenderer(type, data) {
     return (
@@ -85,8 +81,8 @@ export default class ListScreen extends React.Component {
               <Image source={markerImages[data.type]}/>
             </View>
             <View style={{flex: 1, justifyContent: 'center', paddingLeft:30}}>
-              <Text style={{fontSize:18}}>{data.title}</Text>
-              <Text>Type: {data.type}</Text>
+              <Text style={{fontSize:16}}>{data.title}</Text>
+              <Text>Type: {this.capitalize(data.type)}</Text>
               <Text>Lat: {data.coordinates.latitude}</Text>
               <Text>Long: {data.coordinates.longitude}</Text>
             </View>

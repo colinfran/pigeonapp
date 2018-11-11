@@ -11,113 +11,28 @@ import { MapView } from "expo";
 import Modal from "react-native-modal";
 import InfoModal from "./InfoModal";
 import Icon from "@expo/vector-icons";
-import Geocoder from 'react-native-geocoding';
-
-
-Geocoder.init('AIzaSyDX-kRrpL4QR1x4L_NwpoV8HxK0ITx0wSQ'); // use a valid API key
+import { Constants, Location, Permissions } from 'expo';
 
 
 // https://github.com/react-community/react-native-maps
 const markerImages = {
-  flood: require("../assets/flood/20.png"),
-  fire: require("../assets/fire/20.png")
+  flood: require("../assets/flood/60.png"),
+  fire: require("../assets/fire/60.png")
 };
 
-var data = [
-  {
-    title: "hello1",
-    description: "description1",
-    type: "fire",
-    coordinates: { latitude: 38.364239, longitude: -122.72249 },
-    key: "1ab",
-    town: "",
-    county: ""
-  },
-  {
-    title: "hello2",
-    description: "description2",
-    type: "flood",
-    coordinates: { latitude: 38.346909, longitude: -122.675305 },
-    key: "2ab",
-    town: "",
-    county: ""
-  },
-  {
-    title: "hello3",
-    description: "description3",
-    type: "fire",
-    coordinates: { latitude: 37.798319, longitude: -122.417713 },
-    key: "3as",
-    town: "",
-    county: ""
-  },
-  {
-    title: "hello4",
-    description: "description4",
-    type: "flood",
-    coordinates: { latitude: 37.792986, longitude: -122.421484 },
-    key: "4b",
-    town: "",
-    county: ""
-  },
-  {
-    title: "hello5",
-    description: "description5",
-    type: "fire",
-    coordinates: { latitude: 37.765151, longitude: -122.429141 },
-    key: "5ab",
-    town: "",
-    county: ""
-  },
-  {
-    title: "hello6",
-    description: "description6",
-    type: "flood",
-    coordinates: { latitude: 37.774211, longitude: -122.401443 },
-    key: "6a23",
-    town: "",
-    county: ""
-  }
-];
 
 var selectedData = [];
 
-const defaultRegion = {
-  latitude: 37.809489,
-  longitude: -122.476551,
-  latitudeDelta: 0.003,
-  longitudeDelta: 0.003
-};
+// data is located in /Views/LoggedIn/MapListView/index.js
 
-export var geocode = (data) => {
-  Geocoder.from(data.coordinates.latitude, data.coordinates.longitude)
-        .then(json => {
-          var townComponent = json.results[0].address_components[2].long_name;
-          var countyComponent = json.results[0].address_components[3].long_name;
-          data.town = townComponent;
-          data.county = countyComponent;
-
-        })
-        .catch(error => console.warn(error));
-};
-
-
-export const getCurrentLocation = () => {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      position => resolve(position),
-      e => reject(e)
-    );
-  });
-};
 
 export default class MapScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      markers: data,
+      markers: this.props.data,
       isModalVisible: false,
-      region: defaultRegion,
+      region: this.props.defaultRegion,
       selectedMarker: {
         title: "",
         description: "",
@@ -127,48 +42,68 @@ export default class MapScreen extends React.Component {
           longitude: 0
         },
         key: ""
-      }
+      },
+      errorMessage: null,
     };
   }
 
-  addGeocoding(data){
-    for (var i = 0; i < data.length; i++){
-      geocode(data[i]);
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
     }
-  }
+
+    let location = await Location.getCurrentPositionAsync({});
+    // console.log(JSON.stringify(location));
+    this.setState({ region:{ latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.1,
+    longitudeDelta: 0.1} });
+  };
+
 
   componentDidMount() {
-    this.addGeocoding(this.state.markers);
-    return getCurrentLocation().then(position => {
-      if (position) {
-        this.setState({
-          region: {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
-          }
-        });
-      }
-    });
+
+  }
+
+  componentWillMount() {
+    if (Platform.OS === 'android' && !Constants.isDevice) {
+      this.setState({
+        errorMessage: 'Oops, this will not work on Sketch in an Android emulator. Try it on your device!',
+      });
+    } else {
+      this._getLocationAsync();
+    }
   }
 
 
   _toggleModal = () => {
     this.setState({
       isModalVisible: !this.state.isModalVisible,
-      selectedMarker: selectedData
     });
   };
 
   _selectedInfo = () => {
+    // this.setState({selectedMarker: marker})
     this._toggleModal();
     console.log(
-      "User has selected new marker: --> " + JSON.stringify(selectedData)
+      "User has selected new marker: --> " + JSON.stringify(this.state.selectedMarker)
     );
   };
 
+
+  capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+
   render() {
+    let text = 'Waiting..';
+    if (this.state.errorMessage) {
+      console.log( this.state.errorMessage);
+    } else if (this.state.location) {
+      console.log( JSON.stringify(this.state.location));
+    }
     return (
       <View style={{ flex: 1 }}>
         <MapView
@@ -176,9 +111,10 @@ export default class MapScreen extends React.Component {
           region={{
             latitude: this.state.region.latitude,
             longitude: this.state.region.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1
           }}
+
           showsUserLocation={true}
         >
           {this.state.markers.map(marker => (
@@ -187,14 +123,15 @@ export default class MapScreen extends React.Component {
               coordinate={marker.coordinates}
               onCalloutPress={this._selectedInfo}
               onPress={() => {
-                selectedData = marker;
+                this.setState({selectedMarker: marker})
               }}
+              image={markerImages[marker.type]}
             >
-              <Image source={markerImages[marker.type]} />
-              <MapView.Callout style={{ width: 175 }}>
-                <View style={{marginBottom:5, borderWidth: 0.5,borderColor: "black", paddingBottom:3}}>
-                  <Text style={{ fontSize: 20, textAlign:'center'}}>{marker.title}</Text>
-                  <Text style={{ fontSize: 16, textAlign:'center'}}>{marker.type}</Text>
+
+              <MapView.Callout style={{ width: 175}}>
+                <View style={{borderBottomWidth: 0.8,borderColor: "lightgrey",padding:10, marginLeft:-15, marginRight:-15}}>
+                  <Text style={{ fontSize: 16, textAlign:'center'}}>{marker.title}</Text>
+                  <Text style={{ fontSize: 14, textAlign:'center'}}>~{this.capitalize(marker.type)}~</Text>
                   <Text style={{ fontSize: 12, textAlign:'center' }}>{marker.town}, {marker.county}</Text>
                 </View>
                 <View style={styles.opencloseContainer}>
@@ -224,7 +161,10 @@ export default class MapScreen extends React.Component {
 
 const styles = StyleSheet.create({
   opencloseContainer: {
-    borderWidth: 0.5,
-    borderColor: "black"
+    borderBottomWidth:0.8,
+    borderColor: "lightgrey",
+    borderTopWidth:0,
+    marginLeft:-15,
+    marginRight:-15
   }
 });

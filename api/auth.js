@@ -7,8 +7,9 @@ const Token = new TokenService({
 
 const login = (credentials) => {
   // Make API call to retrieve an access token
-  const tok = 'this_is_a_demo_access_token';
-  
+  let r = Math.random().toString(36).substring(7);
+  const tok = r;
+
   return Token.store(tok);
 }
 

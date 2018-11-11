@@ -12,10 +12,7 @@ export default class AddEmergencySubmit extends React.Component {
       type: this.props.navigation.state.params.type,
       title: this.props.navigation.state.params.title,
       description: this.props.navigation.state.params.description,
-      region: this.props.navigation.state.params.region,
-      direction: this.props.navigation.state.params.direction,
-      units: this.props.navigation.state.params.units,
-      distance: this.props.navigation.state.params.distance,
+      pressCoordinates: this.props.navigation.state.params.pressCoordinates,
 
       checkedAgreement: false,
       checkedInformation: false,
@@ -24,10 +21,7 @@ export default class AddEmergencySubmit extends React.Component {
     console.log("type: " + this.state.type);
     console.log("title: " + this.state.title);
     console.log("description: " + this.state.description);
-    console.log("region: " + JSON.stringify(this.state.region));
-    console.log("direction: " + this.state.direction);
-    console.log("units: " + this.state.units);
-    console.log("distance: " + this.state.distance);
+    console.log("pressCoordinates: " + JSON.stringify(this.state.pressCoordinates));
 
   }
 

@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native'
 import {View, TextInput, Text, Button} from 'react-native-ui-lib';
 import {Typography, Colors} from 'react-native-ui-lib';
 import { login } from '../api/auth'
+import { AsyncStorage } from "react-native"
 
 Colors.loadColors({
   blue: '#33ADFF',
@@ -14,10 +15,18 @@ export default class SignupLogin extends React.Component {
     super(props);
     this.onLogin = this.onLogin.bind(this);
     this.onSignup = this.onSignup.bind(this);
+    this.state = {
+      email:"",
+      password: "",
+    };
 
   }
 
   async onLogin() {
+    console.log("email: " + this.state.email);
+    console.log("email: " + this.state.password);
+
+
     await login();
     this.props.navigation.navigate('Emergencies');
   }
@@ -37,8 +46,18 @@ export default class SignupLogin extends React.Component {
         <Text blue text50>Sign In</Text>
         <View style={[{padding: 16}]}></View>
 
-        <TextInput text50 placeholder="Email" dark10/>
-        <TextInput text50 placeholder="Password" secureTextEntry dark10/>
+        <TextInput text50
+          placeholder="Email"
+           dark10
+           onChangeText={(value) => this.setState({email: value})}
+           value={this.state.email}
+           />
+        <TextInput text50
+          placeholder="Password"
+          secureTextEntry dark10
+          onChangeText={(value) => this.setState({password: value})}
+          value={this.state.password}
+          />
         <View marginT-100 center>
           <Button text70 white background-blue label="Login" onPress={this.onLogin}/>
           <Button link text70 blue label="Sign Up" marginT-20 onPress={this.onSignup}/>

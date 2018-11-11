@@ -31,12 +31,12 @@ export default class AddEmergencySuccessful extends React.Component {
         <View
           style={{
             flex: 0,
-            textAlign: "center",
-            alignItems: "center",
-            paddingTop: 10
+            textAlign:'center',
+            paddingTop: 50,
+            padding: 30,
           }}
         >
-        <Text>Your post has been submitted</Text>
+        <Text style={{fontSize:20, textAlign:'center'}}>Your post has been submitted successfully</Text>
         </View>
       </View>
     );

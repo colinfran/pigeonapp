@@ -15,7 +15,8 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   Picker,
-  Constants
+  Constants,
+  Alert
 } from "react-native";
 import { SafeAreaView, Keyboard } from "react-native";
 import {
@@ -54,13 +55,22 @@ export default class AddEmergencyMap extends React.Component {
       type: this.props.navigation.state.params.type,
       description: this.props.navigation.state.params.description,
       title: this.props.navigation.state.params.title,
-      maxLength: 500
+      maxLength: 500,
+
+
+      pressCoordinates: {
+        latitude: 37.809489,
+        longitude: -122.476551,
+        latitudeDelta: 0.3,
+        longitudeDelta: 0.3
+      },
+
     };
     this.setDirection = this.setDirection.bind(this);
     this.setDistance = this.setDistance.bind(this);
     this.setUnits = this.setUnits.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-
+    this.onPoiClick = this.onPoiClick.bind(this);
   }
 
   setDirection(text) {
@@ -76,15 +86,17 @@ export default class AddEmergencyMap extends React.Component {
   }
 
   onSubmit(){
-    var directionFilledOut = (/\S/.test(this.state.direction));
-    var distanceFilledOut = (/\S/.test(this.state.distance));
-    var unitsFilledOut = (/\S/.test(this.state.units));
-    if (directionFilledOut && distanceFilledOut && unitsFilledOut){
-      this.props.navigation.navigate("fifth" ,{ type: this.state.type, title: this.state.title, description: this.state.description, region: this.state.region, direction: this.state.direction, distance: this.state.distance, units: this.state.units });
-    }
-    else{
-      alert("Please give the post directions, distance, and units.");
-    }
+    Alert.alert(
+     'Are you sure this is the correct location of the emergency?',
+     'Please pick an option',
+     [
+       {text: 'No', onPress: () => console.warn('NO Pressed'), style: 'cancel'},
+       {text: 'Yes', onPress: () => this.props.navigation.navigate("fifth" ,{ type: this.state.type, title: this.state.title, description: this.state.description, pressCoordinates: this.state.pressCoordinates })},
+     ]
+   );
+    // console.log(JSON.stringify(this.state.pressCoordinates));
+
+
 
   }
 
@@ -113,6 +125,10 @@ export default class AddEmergencyMap extends React.Component {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
+  onPoiClick(e) {
+    const poi = e.nativeEvent;
+    this.setState({poi});
+  }
 
   render() {
     let direction = [{ value: 'North', }, { value: 'South', }, { value: 'East', }, { value: 'West', }, { value: 'North-West', }, { value: 'North-East', }, { value: 'South-West', }, { value: 'South-East', }];
@@ -159,43 +175,22 @@ export default class AddEmergencyMap extends React.Component {
                   latitudeDelta: 0.005,
                   longitudeDelta: 0.005
                 }}
+                userLocationAnnotationTitle={""}
                 showsUserLocation={true}
                 pitchEnabled={false}
                 rotateEnabled={false}
                 scrollEnabled={false}
                 zoomEnabled={false}
-              />
-            </View>
-            <Text>Please enter the following information to help assist in getting the exact location of this emergency:</Text>
-            <View style={{}}>
-              <Dropdown
-                label='Direction from your location'
-                data={direction}
-
-                onChangeText={this.setDirection}
-
-              />
-            </View>
-
-            <View style={{flex: 1, flexDirection: 'row', justifyContent : 'space-between'}}>
-              <View style={{flex:0,}} >
-                <Dropdown
-                  label='Select Distance'
-                  data={numbers}
-                  containerStyle={{width:150, flex:0}}
-                  onChangeText={this.setDistance}
-
+                onPoiClick={this.onPoiClick}>
+                <MapView.Marker draggable
+                  coordinate={this.state.region}
+                  onDragEnd={(e) => this.setState({ pressCoordinates: e.nativeEvent.coordinate })}
                 />
-              </View>
-              <View style={{}}>
-                <Dropdown
-                  label='Select Units'
-                  data={units}
-                  containerStyle={{width:150, flex:0}}
-                  onChangeText={this.setUnits}
-                />
-              </View>
+                <MapView.Callout tooltip={true} />
+              </MapView>
             </View>
+
+            <Text>Please drag the marker in the above map to the exact location of this emergency.</Text>
             <Button
               style={{ paddingTop: 10 }}
               title="Continue"
@@ -208,6 +203,11 @@ export default class AddEmergencyMap extends React.Component {
     );
   }
 }
+
+
+AddEmergencyMap.propTypes = {
+  provider: MapView.ProviderPropType,
+};
 
 const styles = StyleSheet.create({
   container: {
