@@ -8,6 +8,7 @@ import { createStackNavigator } from 'react-navigation'; // Version can be speci
 import MoreScreen from "../../../components/MoreScreen";
 import MoreHelpfulInfo1 from "../../../components/More/HelpfulInfo/MoreHelpfulInfo1";
 import MoreHelpfulInfo2 from "../../../components/More/HelpfulInfo/MoreHelpfulInfo2";
+import MoreHelpfulInfo3 from "../../../components/More/HelpfulInfo/MoreHelpfulInfo3";
 
 import DisplayName from "../../../components/More/UserInformation/DisplayName";
 import PostedEmergencies from "../../../components/More/UserInformation/PostedEmergencies";
@@ -32,6 +33,9 @@ const AddStack = createStackNavigator(
     },
     Helpful2: {
       screen: MoreHelpfulInfo2,
+    },
+    Helpful3: {
+      screen: MoreHelpfulInfo3,
     },
     Information1: {
       screen: DisplayName,

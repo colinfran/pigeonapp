@@ -129,7 +129,7 @@ export default class MoreScreen extends React.Component {
           <SettingsList>
             <SettingsList.Header headerText='Helpful Info' headerStyle={{}}/>
             <SettingsList.Item
-              title='What to do if theres an Emergency?'
+              title='Fire Information'
               onPress={() => this.props.navigation.navigate('Helpful1') }
 
               arrowIcon={
@@ -139,7 +139,7 @@ export default class MoreScreen extends React.Component {
               }
               />
             <SettingsList.Item
-              title='What to do if theres an Emergency2?'
+              title='Flood Information'
               onPress={() => this.props.navigation.navigate('Helpful2') }
 
               arrowIcon={
@@ -148,6 +148,16 @@ export default class MoreScreen extends React.Component {
                 </View>
               }
               />
+            <SettingsList.Item
+                title='Tornado Information'
+                onPress={() => this.props.navigation.navigate('Helpful3') }
+
+                arrowIcon={
+                  <View style={{marginRight:15,alignSelf:'center'}}>
+                    <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
+                  </View>
+                }
+                />
 
             {this.renderAdminSection()}
 
