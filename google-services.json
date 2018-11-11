@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "623998169926",
+    "firebase_url": "https://project-pigeon-28cbf.firebaseio.com",
+    "project_id": "project-pigeon-28cbf",
+    "storage_bucket": "project-pigeon-28cbf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623998169926:android:c5f92c7a432aca80",
+        "android_client_info": {
+          "package_name": "com.colinfran.finalproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "623998169926-fmnnulf800puug4uf206gev9ilfl5g1e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiFNSIiZO0EUh0jMiYwiDSYJ2wRRl7j4s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
