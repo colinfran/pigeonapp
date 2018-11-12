@@ -52,7 +52,7 @@ export default class InfoModal extends React.Component {
       commentMaxLength: 200
     };
     this._renderImageUp = this._renderImageUp.bind(this);
-
+    this._renderImageDown = this._renderImageDown.bind(this);
     this.imagePress = this.imagePress.bind(this);
     this.addUserComment = this.addUserComment.bind(this);
     this.showPostedComments = this.showPostedComments.bind(this);
@@ -64,10 +64,19 @@ export default class InfoModal extends React.Component {
   imagePress(press) {
     if (this.state.selected == press) {
       if (press == "up") this.setState({ upVotes: this.state.upVotes - 1 });
+      if (press == "down")
+        this.setState({ downVotes: this.state.downVotes - 1 });
       this.setState({ selected: "" });
     } else {
       if (press == "up") {
         this.setState({ upVotes: this.state.upVotes + 1 });
+        if (this.state.selected == "down")
+          this.setState({ downVotes: this.state.downVotes - 1 });
+      }
+      if (press == "down") {
+        this.setState({ downVotes: this.state.downVotes + 1 });
+        if (this.state.selected == "up")
+          this.setState({ upVotes: this.state.upVotes - 1 });
       }
       this.setState({ selected: press });
     }
@@ -91,6 +100,29 @@ export default class InfoModal extends React.Component {
             style={{ height: 20, width: 20 }}
             resizeMethod="resize"
             source={require("../assets/arrowUp.png")}
+          />
+        </View>
+      );
+  }
+
+  _renderImageDown() {
+    if (this.state.selected == "down") {
+      return (
+        <View style={{ height: "100%", width: "100%" }}>
+          <Image
+            style={{ height: 20, width: 20 }}
+            resizeMethod="resize"
+            source={require("../assets/arrowDownSelected.png")}
+          />
+        </View>
+      );
+    } else
+      return (
+        <View style={{ height: "100%", width: "100%" }}>
+          <Image
+            style={{ height: 20, width: 20 }}
+            resizeMethod="resize"
+            source={require("../assets/arrowDown.png")}
           />
         </View>
       );
@@ -212,6 +244,18 @@ export default class InfoModal extends React.Component {
               </TouchableOpacity>
               <View style={{ height: 15, paddingRight: 10 }}>
                 <Text>{this.state.upVotes}</Text>
+              </View>
+
+              <TouchableOpacity
+                style={{ paddingLeft: 10, paddingRight: 5 }}
+                onPress={() => this.imagePress("down")}
+              >
+                <View style={{ width: "100%", height: "100%" }}>
+                  {this._renderImageDown()}
+                </View>
+              </TouchableOpacity>
+              <View style={{ height: 15 }}>
+                <Text>{this.state.downVotes}</Text>
               </View>
             </View>
           </View>

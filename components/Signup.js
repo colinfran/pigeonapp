@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import { StyleSheet, AsyncStorage, Alert } from 'react-native'
 import {View, TextInput, Text, Button} from 'react-native-ui-lib';
 import {Typography, Colors} from 'react-native-ui-lib';
-import { login } from '../api/auth'
+// import { login } from '../api/auth';
+import { createUser } from '../api/auth'
 import CheckBox from 'react-native-check-box';
+import * as firebase from 'firebase';
+
 
 Colors.loadColors({
   blue: '#33ADFF',
@@ -33,14 +36,23 @@ export default class SignUp extends React.Component {
       alert("Passwords do not match");
       return;
     }
+
+    if (this.state.password.length < 6){
+      alert("Password needs to be at least 6 characters.");
+      return;
+    }
     AsyncStorage.setItem('name', this.state.name);
     AsyncStorage.setItem('email', this.state.email);
     AsyncStorage.setItem('password', this.state.password);
     AsyncStorage.setItem('driverslicense', this.state.driverslicense);
     AsyncStorage.setItem('admin', this.state.admin+'');
 
-    await login();
-    this.props.navigation.navigate('Emergencies');
+    var loggedIn = createUser(this.state.email, this.state.password, "firstNameVar", "lastNameVar", this.state.driverslicense, this.state.admin)
+
+    if (loggedIn)
+      this.props.navigation.navigate('Emergencies');
+
+    // createUser(this.state.email, this.state.password, this.state.name, this.state.name, this.state.driverslicense, this.state.admin);
   }
 
   render() {

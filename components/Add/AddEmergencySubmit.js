@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, Platform, Image } from "react-native"; // built-in components
+import { View, Text, Platform, Image, AsyncStorage } from "react-native"; // built-in components
 import {  Button } from 'react-native-elements';
 import CheckBox from 'react-native-check-box';
 
+import { submitEmergencyInfo } from '../../api/auth'
 
 
 export default class AddEmergencySubmit extends React.Component {
@@ -23,6 +24,7 @@ export default class AddEmergencySubmit extends React.Component {
     console.log("description: " + this.state.description);
     console.log("pressCoordinates: " + JSON.stringify(this.state.pressCoordinates));
 
+
   }
 
   static navigationOptions = {
@@ -34,9 +36,19 @@ export default class AddEmergencySubmit extends React.Component {
   };
 
 
-  verify(){
-    if (this.state.checkedAgreement && this.state.checkedInformation)
-      this.props.navigation.navigate('sixth', );
+  async verify(){
+    var posterUserID = await AsyncStorage.getItem('userID');
+    console.log(posterUserID);
+
+    if (this.state.checkedAgreement && this.state.checkedInformation){
+      console.log("Going into function");
+      var submitted = submitEmergencyInfo(this.state.title, this.state.description, this.state.type, 0, posterUserID, this.state.pressCoordinates, "");
+
+      if (submitted)
+        this.props.navigation.navigate('sixth', );
+    }
+
+
     else{
       alert("You did not accept our user agreement and/or the posting agrrement. You cannot continue if you don't accept.")
     }

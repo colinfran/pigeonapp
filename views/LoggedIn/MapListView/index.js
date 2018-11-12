@@ -39,6 +39,7 @@ var data = [
 			{id:3, name:"Bob", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am" },
 			{id:4, name:"Joe", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am" },
 		],
+		circles : 3,
   },
   {
     title: "Flooding in Rohnert Park Waterways",
@@ -56,6 +57,7 @@ var data = [
 			{id:1, name:"Billy",    comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am"},
 			{id:2, name:"Carl",     comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am"},
 		],
+		circles : 3,
   },
   {
     title: "House Fire in San Francisco",
@@ -71,6 +73,7 @@ var data = [
 		numComments: 0,
 		commentData:[
 		],
+		circles : 3,
   },
   {
     title: "Physically Impossible Flood in San Francisco",
@@ -89,6 +92,7 @@ var data = [
 			{id:2, name:"Jaycob",     comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am"},
 			{id:3, name:"Bill", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am"},
 		],
+		circles : 3,
   },
   {
     title: "Apartment Fire in San Francisco",
@@ -110,6 +114,7 @@ var data = [
 			{id:5, name:"Jill", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am" },
 
 		],
+		circles : 3,
   },
   {
     title: "Small Flood in San Francisco",
@@ -132,6 +137,7 @@ var data = [
 			{id:6, name:"Bob", comment:"Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.", time:"9:58 am" },
 
 		],
+		circles : 3,
 
   }
 ];

@@ -5,7 +5,7 @@ import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elemen
 import Grid from 'react-native-grid-component';
 import { MapView } from "expo";
 
-export default class MoreHelpfulInfo2 extends React.Component {
+export default class MoreHelpfulInfo3 extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -14,8 +14,7 @@ export default class MoreHelpfulInfo2 extends React.Component {
   }
 
   static navigationOptions = {
-    title: "Flood informatoin",
-
+    title: "Helpful Tornado Info",
     headerStyle: {
       backgroundColor: "#33ADFF"
     },
@@ -37,71 +36,76 @@ export default class MoreHelpfulInfo2 extends React.Component {
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>If you have time prior to evacuation, secure your home. Bring
-          in outdoor furniture. Move essential items to the highest part of the
-           upper floor of your home.</Text>
+          <Text>Figure out a safe place to ride out the storm.Do you live in a
+           mobile home? Get out. Driving in a car? Get home as quickly as you
+            can, and if that{"'"}s not possible, get to a sturdy building.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Turn off utilities at the main switches or valves if instructed
-           to do so. Disconnect electrical appliances. Do not touch electrical
-           equipment if you are wet or standing in water.</Text>
+          <Text>Get away from windows and get underground. Regardless of where
+           you{"''"}re hunkering down, it should be as far away from windows as
+            possible. Even if a tornado doesn{"''"}t hit, wind or hail could shatter
+             windows, and if you{"''"}re nearby, you could get hurt.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Do not walk through moving water. Six inches of moving water can
-           sweep you off your feet. If you have to walk in water, walk where the
-            water is not moving. Use a stick to check the firmness of the ground
-             in front of you.</Text>
+          <Text>Keep your pets on a leash or in a carrier, and bring them with you</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>“Turn around, don’t drown!” If you come upon a flowing stream
-           where water is above your ankles, stop, turn around and go another way.</Text>
+          <Text>Don{"''"}t leave your home and try to drive away from a tornado.
+          If you made it home, stay there. Tornadoes can shift their path, and
+          even if you think you{"''"}re directly in the line of the storm, being
+           inside shelter is safer than being inside a car. </Text>
         </View>
         <Text></Text>
         <Text></Text>
         <Text  style={{ fontWeight: "bold" }}>How to Prepare</Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Check with your local council about local flood plans or records
-           which detail problem areas</Text>
+          <Text>Create a plan for where you and your family will go in the event
+           of a tornado — at home, at work and at relatives’ or friends’ homes
+            that you visit frequently. Always be alert to changing weather conditions.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Ask authorities about relocation routes and centres.</Text>
+          <Text>Pick a safe room in your home where household members and pets
+           may gather during a tornado. This should be a basement, storm cellar
+           or an interior room on the lowest floor with no windows.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>If your area is flood prone consider alternatives to carpets.</Text>
+          <Text>Listen to NOAA Weather Radio or to commercial radio or television
+           newscasts for the latest information.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Prepare an emergency kit.</Text>
+          <Text>Check with your work and your children’s school and day care
+          center regarding tornado emergency plans. Every building has different
+           safe places. It is important to know where they are and how to get
+           there in an emergency.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Prepare a household flood plan.</Text>
+          <Text>Make sure everyone understands how tornado siren warning systems
+           work and if a warning system is installed in your area.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Keep a list of emergency telephone numbers on display.</Text>
+          <Text>Mark clearly where your first-aid kit and fire extinguishers are
+           located. Make sure the first-aid kit is properly stocked with medical
+           supplies.</Text>
         </View>
         <Text></Text>
-        <View style={{flexDirection: 'row'}}>
-          <Text>{'\u2022'+'  '}</Text>
-          <Text>Check your insurance policy to see if you are covered for flood
-           damage?</Text>
-        </View>
-        <Text></Text>
+
 
         </View>
         </View>

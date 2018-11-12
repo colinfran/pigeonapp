@@ -44,7 +44,10 @@ export default class MapScreen extends React.Component {
         key: ""
       },
       errorMessage: null,
+
     };
+    this._renderCircles = this._renderCircles.bind(this);
+
   }
 
   _getLocationAsync = async () => {
@@ -91,6 +94,30 @@ export default class MapScreen extends React.Component {
     );
   };
 
+  _drawCircle(){
+    return(
+      <MapView.Circle
+      center={data.coordinates}
+      radius={20}
+      strokeWidth={2}
+      strokeColor="#3399ff"
+      fillColor="#80bfff"
+    />
+    );
+  }
+
+  _renderCircles(data){
+      return(
+        <MapView.Circle
+        center={data.coordinates}
+        radius={20}
+        strokeWidth={2}
+        strokeColor="#3399ff"
+        fillColor="#80bfff"
+      />
+      );
+  }
+
 
   capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -118,6 +145,7 @@ export default class MapScreen extends React.Component {
           showsUserLocation={true}
         >
           {this.state.markers.map(marker => (
+
             <MapView.Marker
               key={marker.key}
               coordinate={marker.coordinates}
