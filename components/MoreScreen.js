@@ -149,7 +149,7 @@ export default class MoreScreen extends React.Component {
               }
               />
             <SettingsList.Item
-                title='Tornado Information'
+                title='Landslide Information'
                 onPress={() => this.props.navigation.navigate('Helpful3') }
 
                 arrowIcon={
