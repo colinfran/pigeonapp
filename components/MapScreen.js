@@ -17,7 +17,9 @@ import { Constants, Location, Permissions } from 'expo';
 // https://github.com/react-community/react-native-maps
 const markerImages = {
   flood: require("../assets/flood/60.png"),
-  fire: require("../assets/fire/60.png")
+  fire: require("../assets/fire/60.png"),
+  tornado: require("../assets/tornado/60.png"),
+  other: require("../assets/alert/60.png")
 };
 
 
@@ -146,9 +148,11 @@ export default class MapScreen extends React.Component {
         >
           {this.state.markers.map(marker => (
 
+
+
             <MapView.Marker
               key={marker.key}
-              coordinate={marker.coordinates}
+              coordinate={marker.postRegion}
               onCalloutPress={this._selectedInfo}
               onPress={() => {
                 this.setState({selectedMarker: marker})

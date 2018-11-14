@@ -5,6 +5,8 @@ import { Badge } from 'react-native-elements';
 import { logout } from '../api/auth'
 import SettingsList from 'react-native-settings-list';
 import DialogInput from 'react-native-dialog-input';
+import { getNumPosts, getMyPosts } from '../api/auth'
+import * as firebase from 'firebase';
 
 
 
@@ -23,7 +25,7 @@ export default class MoreScreen extends React.Component {
       notificationsValue: false,
       isDialogVisible: false,
       admin: false,
-
+      myPosts: null,
       newPosts:0,
     };
     this.renderAdminSection = this.renderAdminSection.bind(this);
@@ -41,12 +43,17 @@ export default class MoreScreen extends React.Component {
 
   _retrieveData = async () => {
     try {
-      const value = await AsyncStorage.getItem('admin');
-      if (value !== null) {
+      const value1 = await AsyncStorage.getItem('admin');
+      const value2 = await AsyncStorage.getItem('userID');
+      const value3 = await AsyncStorage.getItem('name');
+      const value4 = await AsyncStorage.getItem('email');
+
+      if (value1 !== null && value2) {
         // We have data!!
-        console.log("Admin: " + value);
-        var result = (value == "true");
-        this.setState({admin: result})
+        console.log("Admin: " + value1);
+        var result = (value1 == "true");
+        this.setState({admin: result, userId: value2, displayName: value3, email: value4})
+        // console.log(value2)
       }
      }
      catch (error) {
@@ -57,6 +64,10 @@ export default class MoreScreen extends React.Component {
 
   componentDidMount() {
     this._retrieveData();
+    var num = getMyPosts(this.state.userId);
+    var k = 0;
+    console.log(num);
+    this.setState({numPosts: getNumPosts(), myPosts: num});
   }
 
   verifyLogout(){
@@ -95,12 +106,12 @@ export default class MoreScreen extends React.Component {
          ,
 
          <SettingsList.Item
-           title='New Posts Based On Your Location'
+           title='Review New Posts'
            onPress={() => this.props.navigation.navigate('Admin1') }
            arrowIcon={
              <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
                  <Badge
-                   value={this.state.newPosts}
+                   value={this.state.numPosts}
                    containerStyle={{ backgroundColor: 'lightgrey', marginRight:10 }}
                    textStyle={{ color: 'black' }}
                  />
@@ -192,7 +203,7 @@ export default class MoreScreen extends React.Component {
               arrowIcon={
                 <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
                     <Badge
-                      value={this.state.numPosts}
+                      value={this.state.myPosts}
                       containerStyle={{ backgroundColor: 'lightgrey', marginRight:10 }}
                       textStyle={{ color: 'black' }}
                     />

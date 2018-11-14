@@ -20,7 +20,8 @@ export default class SignUp extends React.Component {
     this.onLogin = this.onLogin.bind(this);
 
     this.state = {
-      name:"",
+      firstname:"",
+      lastname:"",
       email:"",
       password: "",
       passwordCheck: "",
@@ -41,13 +42,13 @@ export default class SignUp extends React.Component {
       alert("Password needs to be at least 6 characters.");
       return;
     }
-    AsyncStorage.setItem('name', this.state.name);
+    AsyncStorage.setItem('name', this.state.firstname);
     AsyncStorage.setItem('email', this.state.email);
     AsyncStorage.setItem('password', this.state.password);
     AsyncStorage.setItem('driverslicense', this.state.driverslicense);
     AsyncStorage.setItem('admin', this.state.admin+'');
 
-    var loggedIn = createUser(this.state.email, this.state.password, "firstNameVar", "lastNameVar", this.state.driverslicense, this.state.admin)
+    var loggedIn = createUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, this.state.driverslicense, this.state.admin)
 
     if (loggedIn)
       this.props.navigation.navigate('Emergencies');
@@ -61,10 +62,19 @@ export default class SignUp extends React.Component {
       <View flex paddingH-25 paddingT-20>
         <Text blue50 text20>Sign Up</Text>
         <View paddingT-25></View>
-        <TextInput text50 dark10
-          placeholder="Name"
-          onChangeText={(value) => this.setState({name: value})}
-          value={this.state.name}/>
+        <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
+          <TextInput text50 dark10
+            style={{width:'45%'}}
+            placeholder="First Name"
+            onChangeText={(value) => this.setState({firstname: value})}
+            value={this.state.name}/>
+            <TextInput text50 dark10
+              style={{width:'45%'}}
+              placeholder="Last Name"
+              onChangeText={(value) => this.setState({lastname: value})}
+              value={this.state.name}/>
+        </View>
+
         <TextInput text50 dark10
           placeholder="Email"
           onChangeText={(value) => this.setState({email: value})}

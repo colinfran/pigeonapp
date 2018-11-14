@@ -4,6 +4,11 @@ import {  Button } from 'react-native-elements';
 import CheckBox from 'react-native-check-box';
 
 import { submitEmergencyInfo } from '../../api/auth'
+import Geocoder from 'react-native-geocoding';
+
+
+//---------------------------------------------------------------------------
+Geocoder.init('AIzaSyDX-kRrpL4QR1x4L_NwpoV8HxK0ITx0wSQ'); // use a valid API key
 
 
 export default class AddEmergencySubmit extends React.Component {
@@ -14,9 +19,10 @@ export default class AddEmergencySubmit extends React.Component {
       title: this.props.navigation.state.params.title,
       description: this.props.navigation.state.params.description,
       pressCoordinates: this.props.navigation.state.params.pressCoordinates,
-
       checkedAgreement: false,
       checkedInformation: false,
+      town: "",
+      county: "",
 
     };
     console.log("type: " + this.state.type);
@@ -24,6 +30,7 @@ export default class AddEmergencySubmit extends React.Component {
     console.log("description: " + this.state.description);
     console.log("pressCoordinates: " + JSON.stringify(this.state.pressCoordinates));
 
+    this.geocode = this.geocode.bind(this);
 
   }
 
@@ -35,14 +42,31 @@ export default class AddEmergencySubmit extends React.Component {
     headerTintColor: "#fff"
   };
 
+  geocode(){
+    Geocoder.from(this.state.pressCoordinates.latitude, this.state.pressCoordinates.longitude)
+          .then(json => {
+            var townComponent = json.results[0].address_components[2].long_name;
+            var countyComponent = json.results[0].address_components[3].long_name;
+            this.setState({town: townComponent, county: countyComponent})
+            // console.log(townComponent + " " + countyComponent);
+
+          })
+          .catch(error => console.warn(error));
+  }
+
+  componentDidMount(){
+    this.geocode();
+    console.log(this.state.town + " " + this.state.county);
+  }
+
 
   async verify(){
     var posterUserID = await AsyncStorage.getItem('userID');
     console.log(posterUserID);
 
+
     if (this.state.checkedAgreement && this.state.checkedInformation){
-      console.log("Going into function");
-      var submitted = submitEmergencyInfo(this.state.title, this.state.description, this.state.type, 0, posterUserID, this.state.pressCoordinates, "");
+      var submitted = submitEmergencyInfo(this.state.title, this.state.description, this.state.type, 0, posterUserID, this.state.pressCoordinates, "", this.state.town, this.state.county);
 
       if (submitted)
         this.props.navigation.navigate('sixth', );

@@ -13,6 +13,7 @@ import {
 import Modal from "react-native-modal";
 import Comments from "./Comments";
 import renderIf from "../assets/renderIf";
+import {submitComment, updateScore} from '../api/auth'
 
 import { Button as ElementsButton } from "react-native-elements";
 
@@ -26,16 +27,18 @@ export default class InfoModal extends React.Component {
     super(props);
 
     this.state = {
+      userId: null,
+      userfirstname: null,
+      postId: this.props.dataClick.postId,
       title: this.props.dataClick.title,
       description: this.props.dataClick.description,
       coordinates: {
-        latitude: this.props.dataClick.coordinates.latitude,
-        longitude: this.props.dataClick.coordinates.longitude
+        latitude: this.props.dataClick.postRegion.latitude,
+        longitude: this.props.dataClick.postRegion.longitude
       },
       town: this.props.dataClick.town,
       county: this.props.dataClick.county,
-      upVotes: this.props.dataClick.upVotes,
-      downVotes: this.props.dataClick.downVotes,
+      upVotes: this.props.dataClick.score,
 
       selected: this.props.dataClick.voteSelected,
 
@@ -51,6 +54,8 @@ export default class InfoModal extends React.Component {
       commentTextLength: 200,
       commentMaxLength: 200
     };
+
+
     this._renderImageUp = this._renderImageUp.bind(this);
 
     this.imagePress = this.imagePress.bind(this);
@@ -63,11 +68,16 @@ export default class InfoModal extends React.Component {
 
   imagePress(press) {
     if (this.state.selected == press) {
-      if (press == "up") this.setState({ upVotes: this.state.upVotes - 1 });
+      if (press == "up") {
+        this.setState({ upVotes: this.state.upVotes - 1 });
+        updateScore(this.state.postId, this.state.upVotes-1)
+      }
       this.setState({ selected: "" });
     } else {
       if (press == "up") {
         this.setState({ upVotes: this.state.upVotes + 1 });
+        updateScore(this.state.postId, this.state.upVotes+1)
+
       }
       this.setState({ selected: press });
     }
@@ -121,14 +131,17 @@ export default class InfoModal extends React.Component {
   }
 
   _retrieveData = async () => {
-    console.log("Here");
+    // console.log("Here");
     try {
       const value = await AsyncStorage.getItem("admin");
+      const id = await AsyncStorage.getItem("userID");
+      const name = await AsyncStorage.getItem("name");
+
       if (value !== null) {
         // We have data!!
-        console.log(value);
+        // console.log(value);
         var result = value == "true";
-        this.setState({ admin: result });
+        this.setState({ admin: result, userId: id, userfirstname: name});
       }
     } catch (error) {
       // Error retrieving data
@@ -163,17 +176,24 @@ export default class InfoModal extends React.Component {
   }
 
   postComment(){
+    console.log(this.state.userId);
+    console.log(this.state.userfirstname);
     if (this.state.commentString=="")
       return;
-    alert("comment: "+ this.state.commentString );
+    // alert("comment: "+ this.state.commentString );
+    submitComment(this.state.postId, this.state.commentString, this.state.userfirstname, this.state.numComments);
+
     this.setState({
       commentString: "",
       commentTextLength: this.state.commentMaxLength,
       addComment: !this.state.addComment,
+      numComments: (this.state.numComments + 1)
+
     });
   }
 
   render() {
+    // console.log(this.props.dataClick);
     return (
       <View
         style={{
@@ -294,7 +314,7 @@ export default class InfoModal extends React.Component {
           )}
           {renderIf(
             this.state.showComments,
-            <Comments commentData={this.state.commentData} />
+            <Comments postId={this.state.postId} numComments={this.state.numComments} commentData={this.state.commentData} />
           )}
         </View>
         <View style={{borderWidth:.5, borderColor:'lightgrey'}}>

@@ -8,23 +8,53 @@ import {
   ScrollView,
   FlatList
 } from 'react-native';
+import * as firebase from 'firebase';
+
+const list = []
 
 export default class Comments extends  React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.commentData,
+      dataSource: list,
+      postId: this.props.postId,
+      numComments: this.props.numComments,
     }
+    this.itemsRef = firebase.database().ref('/posts/'+this.state.postId + "/comments/");
   }
+
+  setItemsFromFirebase(itemsRef) {
+   itemsRef.on('value', (snapshot) => {
+
+     // get children as an array
+     var items = [];
+     for(var key in snapshot.val()){
+				var dataOb = snapshot.val()[key];
+        if ((typeof dataOb === 'object'))
+          items.push( dataOb );
+    }
+
+     this.setState({
+       dataSource: items
+     });
+
+   });
+ }
+
+ componentDidMount() {
+   this.setItemsFromFirebase(this.itemsRef);
+ }
 
 
   render() {
+    // console.log(JSON.stringify(this.state.data));
     return (
       <FlatList
         style={styles.root}
-        data={this.state.data}
-        extraData={this.state}
+        data={this.state.dataSource}
+        renderRow={this.renderItem}
+
         ItemSeparatorComponent={() => {
           return (
             <View style={styles.separator}/>
@@ -44,7 +74,7 @@ export default class Comments extends  React.Component {
                     {Notification.time}
                   </Text>
                 </View>
-                <Text rkType='primary3 mediumLine'>{Notification.comment}</Text>
+                <Text rkType='primary3 mediumLine'>{Notification.commentString}</Text>
               </View>
             </View>
           );
