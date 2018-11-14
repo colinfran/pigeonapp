@@ -14,7 +14,7 @@ export default class MoreHelpfulInfo3 extends React.Component {
   }
 
   static navigationOptions = {
-    title: "Helpful Tornado Info",
+    title: "Helpful Landslide Info",
     headerStyle: {
       backgroundColor: "#33ADFF"
     },
@@ -32,77 +32,75 @@ export default class MoreHelpfulInfo3 extends React.Component {
             paddingTop: 10
           }}
         >
-        <Text  style={{ fontWeight: "bold" }}>Basic Information</Text>
+        <Text  style={{ fontWeight: "bold" }}>Warning Signs</Text>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Figure out a safe place to ride out the storm.Do you live in a
-           mobile home? Get out. Driving in a car? Get home as quickly as you
-            can, and if that{"'"}s not possible, get to a sturdy building.</Text>
+          <Text>During a severe storm, stay alert and awake. Many deaths from
+           landslides occur while people are sleeping.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Get away from windows and get underground. Regardless of where
-           you{"''"}re hunkering down, it should be as far away from windows as
-            possible. Even if a tornado doesn{"''"}t hit, wind or hail could shatter
-             windows, and if you{"''"}re nearby, you could get hurt.</Text>
+          <Text>Listen to local news stations on a battery-powered radio for
+           warnings of heavy rainfall.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Keep your pets on a leash or in a carrier, and bring them with you</Text>
+          <Text>Listen for unusual sounds that might indicate moving debris,
+           such as trees cracking or boulders knocking together.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Don{"''"}t leave your home and try to drive away from a tornado.
-          If you made it home, stay there. Tornadoes can shift their path, and
-          even if you think you{"''"}re directly in the line of the storm, being
-           inside shelter is safer than being inside a car. </Text>
+          <Text>Move away from the path of a landslide or debris flow as quickly
+           as possible. The danger from a mudflow increases near stream channels
+            and with prolonged heavy rains. Mudflows can move faster than you
+             can walk or run. Look upstream before crossing a bridge and do not
+              cross the bridge if a mudflow is approaching.</Text>
         </View>
         <Text></Text>
         <Text></Text>
         <Text  style={{ fontWeight: "bold" }}>How to Prepare</Text>
+        <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Create a plan for where you and your family will go in the event
-           of a tornado — at home, at work and at relatives’ or friends’ homes
-            that you visit frequently. Always be alert to changing weather conditions.</Text>
+          <Text>To begin preparing, you should build an emergency kit and make
+           a family communications plan.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Pick a safe room in your home where household members and pets
-           may gather during a tornado. This should be a basement, storm cellar
-           or an interior room on the lowest floor with no windows.</Text>
+          <Text>Prepare for landslides by following proper land-use procedures
+           - avoid building near steep slopes, close to mountain edges, near
+            drainage ways or along natural erosion valleys.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Listen to NOAA Weather Radio or to commercial radio or television
-           newscasts for the latest information.</Text>
+          <Text>Become familiar with the land around you. Learn whether debris
+           flows have occurred in your area by contacting local officials.
+            Slopes where debris flows have occurred in the past are likely to
+             experience them in the future.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Check with your work and your children’s school and day care
-          center regarding tornado emergency plans. Every building has different
-           safe places. It is important to know where they are and how to get
-           there in an emergency.</Text>
+          <Text>Get a ground assessment of your property.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Make sure everyone understands how tornado siren warning systems
-           work and if a warning system is installed in your area.</Text>
+          <Text>Consult a professional for advice on appropriate preventative
+           measures for your home or business, such as flexible pipe fittings,
+            which can better resist breakage.</Text>
         </View>
         <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
-          <Text>Mark clearly where your first-aid kit and fire extinguishers are
-           located. Make sure the first-aid kit is properly stocked with medical
-           supplies.</Text>
+          <Text>Protect your property by planting ground cover on slopes and
+           building retaining walls.</Text>
         </View>
         <Text></Text>
 
