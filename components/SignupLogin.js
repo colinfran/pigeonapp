@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { StyleSheet } from 'react-native'
 import {View, TextInput, Text, Button} from 'react-native-ui-lib';
 import {Typography, Colors} from 'react-native-ui-lib';
-import { login } from '../api/auth'
+// import { login } from '../api/auth'
 import { AsyncStorage } from "react-native"
+import { signUserIn } from '../api/auth'
 
 Colors.loadColors({
   blue: '#33ADFF',
@@ -23,16 +24,17 @@ export default class SignupLogin extends React.Component {
   }
 
   async onLogin() {
+    if (this.state.email == "" || this.state.password == "")
+      return;
+    console.log("Here");
+    var loggedIn = signUserIn(this.state.email, this.state.password);
     console.log("email: " + this.state.email);
     console.log("email: " + this.state.password);
-
-
-    await login();
-    this.props.navigation.navigate('Emergencies');
+    if (loggedIn)
+      return this.props.navigation.navigate('Emergencies');
   }
 
   async onSignup() {
-    await login();
     this.props.navigation.navigate('Signup');
   }
 

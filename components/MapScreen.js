@@ -12,12 +12,15 @@ import Modal from "react-native-modal";
 import InfoModal from "./InfoModal";
 import Icon from "@expo/vector-icons";
 import { Constants, Location, Permissions } from 'expo';
+import * as firebase from 'firebase';
 
 
 // https://github.com/react-community/react-native-maps
 const markerImages = {
   flood: require("../assets/flood/60.png"),
-  fire: require("../assets/fire/60.png")
+  fire: require("../assets/fire/60.png"),
+  landslide: require("../assets/landslide/60.png"),
+  other: require("../assets/alert/60.png")
 };
 
 
@@ -44,7 +47,11 @@ export default class MapScreen extends React.Component {
         key: ""
       },
       errorMessage: null,
+
     };
+    this.itemsRef = firebase.database().ref('/posts');
+    this._renderCircles = this._renderCircles.bind(this);
+
   }
 
   _getLocationAsync = async () => {
@@ -63,6 +70,21 @@ export default class MapScreen extends React.Component {
 
 
   componentDidMount() {
+    // this.itemsRef.on('value', (snapshot) => {
+    //   // get children as an array
+    //   var items = [];
+    //   for(var key in snapshot.val()){
+ 		// 		var dataOb = snapshot.val()[key];
+    //     console.log(dataOb);
+    //      if ((typeof dataOb === 'object'))
+    //        items.push( dataOb );
+    //  }
+    //  console.log(items);
+    //   this.setState({
+    //     markers: items
+    //   });
+    //
+    // // });
 
   }
 
@@ -91,6 +113,30 @@ export default class MapScreen extends React.Component {
     );
   };
 
+  _drawCircle(){
+    return(
+      <MapView.Circle
+      center={data.coordinates}
+      radius={20}
+      strokeWidth={2}
+      strokeColor="#3399ff"
+      fillColor="#80bfff"
+    />
+    );
+  }
+
+  _renderCircles(data){
+      return(
+        <MapView.Circle
+        center={data.coordinates}
+        radius={20}
+        strokeWidth={2}
+        strokeColor="#3399ff"
+        fillColor="#80bfff"
+      />
+      );
+  }
+
 
   capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -114,13 +160,17 @@ export default class MapScreen extends React.Component {
             latitudeDelta: 0.1,
             longitudeDelta: 0.1
           }}
+          userLocationAnnotationTitle={""}
 
           showsUserLocation={true}
         >
           {this.state.markers.map(marker => (
+
+
+
             <MapView.Marker
               key={marker.key}
-              coordinate={marker.coordinates}
+              coordinate={marker.postRegion}
               onCalloutPress={this._selectedInfo}
               onPress={() => {
                 this.setState({selectedMarker: marker})

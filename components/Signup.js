@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import { StyleSheet, AsyncStorage, Alert } from 'react-native'
 import {View, TextInput, Text, Button} from 'react-native-ui-lib';
 import {Typography, Colors} from 'react-native-ui-lib';
-import { login } from '../api/auth'
+// import { login } from '../api/auth';
+import { createUser } from '../api/auth'
 import CheckBox from 'react-native-check-box';
+import * as firebase from 'firebase';
+
 
 Colors.loadColors({
   blue: '#33ADFF',
@@ -17,7 +20,8 @@ export default class SignUp extends React.Component {
     this.onLogin = this.onLogin.bind(this);
 
     this.state = {
-      name:"",
+      firstname:"",
+      lastname:"",
       email:"",
       password: "",
       passwordCheck: "",
@@ -33,14 +37,23 @@ export default class SignUp extends React.Component {
       alert("Passwords do not match");
       return;
     }
-    AsyncStorage.setItem('name', this.state.name);
+
+    if (this.state.password.length < 6){
+      alert("Password needs to be at least 6 characters.");
+      return;
+    }
+    AsyncStorage.setItem('name', this.state.firstname);
     AsyncStorage.setItem('email', this.state.email);
     AsyncStorage.setItem('password', this.state.password);
     AsyncStorage.setItem('driverslicense', this.state.driverslicense);
     AsyncStorage.setItem('admin', this.state.admin+'');
 
-    await login();
-    this.props.navigation.navigate('Emergencies');
+    var loggedIn = createUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, this.state.driverslicense, this.state.admin)
+
+    if (loggedIn)
+      this.props.navigation.navigate('Emergencies');
+
+    // createUser(this.state.email, this.state.password, this.state.name, this.state.name, this.state.driverslicense, this.state.admin);
   }
 
   render() {
@@ -49,10 +62,19 @@ export default class SignUp extends React.Component {
       <View flex paddingH-25 paddingT-20>
         <Text blue50 text20>Sign Up</Text>
         <View paddingT-25></View>
-        <TextInput text50 dark10
-          placeholder="Name"
-          onChangeText={(value) => this.setState({name: value})}
-          value={this.state.name}/>
+        <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
+          <TextInput text50 dark10
+            style={{width:'45%'}}
+            placeholder="First Name"
+            onChangeText={(value) => this.setState({firstname: value})}
+            value={this.state.name}/>
+            <TextInput text50 dark10
+              style={{width:'45%'}}
+              placeholder="Last Name"
+              onChangeText={(value) => this.setState({lastname: value})}
+              value={this.state.name}/>
+        </View>
+
         <TextInput text50 dark10
           placeholder="Email"
           onChangeText={(value) => this.setState({email: value})}

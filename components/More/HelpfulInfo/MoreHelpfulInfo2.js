@@ -65,7 +65,6 @@ export default class MoreHelpfulInfo2 extends React.Component {
         <Text></Text>
         <Text></Text>
         <Text  style={{ fontWeight: "bold" }}>How to Prepare</Text>
-        <Text></Text>
         <View style={{flexDirection: 'row'}}>
           <Text>{'\u2022'+'  '}</Text>
           <Text>Check with your local council about local flood plans or records

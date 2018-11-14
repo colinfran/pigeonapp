@@ -1,41 +1,32 @@
 import React from "react";
-import {StyleSheet, Text, View, Dimensions, TouchableOpacity, Image} from "react-native";
+import {StyleSheet, Text, View, Dimensions, TouchableOpacity, Image, RefreshControl, ListView} from "react-native";
 import {RecyclerListView, DataProvider, LayoutProvider} from "recyclerlistview";
 import {SafeAreaView} from 'react-native';
 import Modal from "react-native-modal";
 import InfoModal from "./InfoModal";
+import * as firebase from 'firebase';
+
+
 
 //https://github.com/Flipkart/recyclerlistview#guides
 
 const markerImages = {
     flood: require('../assets/flood/60.png'),
     fire: require('../assets/fire/60.png'),
+    landslide: require('../assets/landslide/60.png'),
+    other: require('../assets/alert/60.png'),
 };
 
-// RECYCLERVIEW CODE
-const ViewTypes = {
-  FULL: 0
-};
+
+const list = []
 
 export default class ListScreen extends React.Component {
-  constructor(args) {
-    super(args);
+  constructor(props) {
+    super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
 
-    // If you do not understand how the module 'recyclerlistview' works,
-    // please do not touch the layoutProvider, rowRenderer, or dataProvider
-    let {width} = Dimensions.get("window");
-    let dataProvider = new DataProvider((r1, r2) => {
-      return r1 !== r2;
-    });
-    this._layoutProvider = new LayoutProvider(index => {
-      return ViewTypes.FULL;
-    }, (type, dim) => {
-      dim.width = width;
-      dim.height = 100;
-    });
-    this._rowRenderer = this._rowRenderer.bind(this);
     this.state = {
-      dataProvider: dataProvider.cloneWithRows(this.props.data),
+      dataSource: this.ds.cloneWithRows(list),
       isModalVisible: false,
       selectedMarker: {
         title: "",
@@ -47,9 +38,103 @@ export default class ListScreen extends React.Component {
         },
         key: ""
       },
-      admin: false
+      admin: false,
+      userId: null,
+
     };
+
+    this.itemsRef = firebase.database().ref('/posts');
+    this.renderItem = this.renderItem.bind(this)
   }
+
+  setItemsFromFirebase(itemsRef) {
+   itemsRef.on('value', (snapshot) => {
+
+     // get children as an array
+     var items = [];
+     for(var key in snapshot.val()){
+				var dataOb = snapshot.val()[key];
+        if ((typeof dataOb === 'object'))
+          items.push( dataOb );
+    }
+
+     this.setState({
+       dataSource: this.ds.cloneWithRows(items)
+     });
+
+   });
+ }
+
+ componentDidMount() {
+   this.setItemsFromFirebase(this.itemsRef);
+ }
+
+ capitalize(str) {
+   return str.charAt(0).toUpperCase() + str.slice(1);
+ }
+
+ renderItem(item) {
+    return (
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => this._selectedInfo(item)}
+        key={item.id}
+        >
+          <View style={{flexDirection: "row"}}>
+            <View style={{width: 100, height: 100,justifyContent: 'center', alignItems: 'center', paddingLeft:20}}>
+              <Image source={markerImages[item.type]}/>
+            </View>
+            <View style={{flex: 1, justifyContent: 'center', paddingLeft:20, }}>
+              <Text style={{fontSize:16,width:'98%'}}>{item.title}</Text>
+              <Text>Type: {this.capitalize(item.type)}</Text>
+
+              <Text>Lat: {item.postRegion.latitude}</Text>
+              <Text>Long: {item.postRegion.longitude}</Text>
+
+
+
+            </View>
+            <View style={{right: 25, justifyContent: 'center', alignItems: 'center'}}>
+              <Image
+                source={require('../assets/more.png')}
+                style={{width: 35, height: 35}}
+              />
+            </View>
+          </View>
+    </TouchableOpacity>
+    // <TouchableOpacity  delayLongPress={900}>
+    //   <View style={styles.container}>
+    //     <Text style={styles.listItem}>{item.title}</Text>
+    //   </View>
+    // </TouchableOpacity>
+    )
+  }
+
+  render() {
+    return(
+
+      <View style={{flex:1}}>
+        <Modal
+          isVisible={this.state.isModalVisible}
+          onBackdropPress={() =>
+            this.setState({ isModalVisible: !this.state.isModalVisible })
+          }
+          style={{ alignItems: "center" }}
+          hideModalContentWhileAnimating={true}
+        >
+          <InfoModal
+            toggle={this._toggleModal}
+            dataClick={this.state.selectedMarker}
+          />
+        </Modal>
+        <ListView
+            dataSource={this.state.dataSource}
+            renderRow={this.renderItem} />
+      </View>
+      )
+  }
+
+
 
   _toggleModal = () => {
     this.setState({
@@ -65,62 +150,10 @@ export default class ListScreen extends React.Component {
     this._toggleModal();
   };
 
-  capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
   //Given type and data return the view component
-  _rowRenderer(type, data) {
-    return (
-      <TouchableOpacity
-        style={styles.container}
-        onPress={() => this._selectedInfo(data)}
-        >
-          <View style={{flexDirection: "row"}}>
-            <View style={{width: 100, height: 100,justifyContent: 'center', alignItems: 'center', paddingLeft:20}}>
-              <Image source={markerImages[data.type]}/>
-            </View>
-            <View style={{flex: 1, justifyContent: 'center', paddingLeft:30}}>
-              <Text style={{fontSize:16}}>{data.title}</Text>
-              <Text>Type: {this.capitalize(data.type)}</Text>
-              <Text>Lat: {data.coordinates.latitude}</Text>
-              <Text>Long: {data.coordinates.longitude}</Text>
-            </View>
-            <View style={{right: 25, justifyContent: 'center', alignItems: 'center'}}>
-              <Image
-                source={require('../assets/more.png')}
-                style={{width: 35, height: 35}}
-              />
-            </View>
-          </View>
-    </TouchableOpacity>)
-  }
 
-  render() {
-    return (
-      <View style={{flex:1}}>
-        <Modal
-          isVisible={this.state.isModalVisible}
-          onBackdropPress={() =>
-            this.setState({ isModalVisible: !this.state.isModalVisible })
-          }
-          style={{ alignItems: "center" }}
-          hideModalContentWhileAnimating={true}
-        >
-          <InfoModal
-            toggle={this._toggleModal}
-            dataClick={this.state.selectedMarker}
-          />
-        </Modal>
-        <RecyclerListView
-          style={{flex: 1}}
-          layoutProvider={this._layoutProvider}
-          dataProvider={this.state.dataProvider}
-          rowRenderer={this._rowRenderer}
-        />
-      </View>
-    );
-  }
+
+
 }
 
 const styles = StyleSheet.create({

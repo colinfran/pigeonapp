@@ -9,7 +9,7 @@ import { Constants, Location, Permissions } from 'expo';
 var data=[
   {title:"Fire",description:"Description of types of fires or something.",type: "fire", icon:require("../../assets/fire/72.png"), colors: "red"},
   {title:"Flood",description:"Description of flood or something.",type: "flood", icon:require("../../assets/flood/72.png"), colors: "green"},
-  {title:"Tornado",description:"Description of Tornado or something.",type: "tornado", icon: require("../../assets/tornado/72.png"), colors: "yellow"},
+  {title:"Landslide",description:"Description of landslide or something.",type: "landslide", icon: require("../../assets/landslide/72.png"), colors: "yellow"},
   {title:"Other",description:"Any emergency that is not a selectable option.",type: "other", icon: require("../../assets/alert/72.png"), colors: "lightgreen"}
 ]
 
