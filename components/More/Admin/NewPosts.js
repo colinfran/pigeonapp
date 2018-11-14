@@ -9,7 +9,7 @@ import * as firebase from 'firebase';
 const markerImages = {
     flood: require('../../../assets/flood/60.png'),
     fire: require('../../../assets/fire/60.png'),
-    tornado: require('../../../assets/tornado/60.png'),
+    landslide: require('../../../assets/landslide/60.png'),
     other: require('../../../assets/alert/60.png'),
 };
 

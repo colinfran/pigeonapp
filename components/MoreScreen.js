@@ -5,28 +5,35 @@ import { Badge } from 'react-native-elements';
 import { logout } from '../api/auth'
 import SettingsList from 'react-native-settings-list';
 import DialogInput from 'react-native-dialog-input';
-import { getNumPosts, getMyPosts } from '../api/auth'
+import { getNumPosts, getMyPosts, changeName } from '../api/auth'
 import * as firebase from 'firebase';
 
 
-
+var list = [];
 export default class MoreScreen extends React.Component {
   constructor(props){
     super(props);
+    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+
     this.onLogout = this.onLogout.bind(this);
     this.onValueChange = this.onValueChange.bind(this);
     this.verifyLogout = this.verifyLogout.bind(this);
     this.showDialog = this.showDialog.bind(this);
 
     this.state = {
-      email:"email@email.com",
-      displayName: "Bob",
+      email:"",
+      displayName: "",
       numPosts: 0,
       notificationsValue: false,
       isDialogVisible: false,
       admin: false,
       myPosts: null,
       newPosts:0,
+      userId: null,
+      data: null,
+      keys: null,
+      dataSource: this.ds.cloneWithRows(list),
+
     };
     this.renderAdminSection = this.renderAdminSection.bind(this);
 
@@ -48,12 +55,34 @@ export default class MoreScreen extends React.Component {
       const value3 = await AsyncStorage.getItem('name');
       const value4 = await AsyncStorage.getItem('email');
 
-      if (value1 !== null && value2) {
+      if (value1 !== null && value2!== null && value3!== null && value4!== null) {
         // We have data!!
         console.log("Admin: " + value1);
         var result = (value1 == "true");
         this.setState({admin: result, userId: value2, displayName: value3, email: value4})
         // console.log(value2)
+        var items = {};
+        var keysArray = [];
+        var arr = [];
+        var count = 0;
+        firebase.database().ref('/posts/').on('value', (snapshot) => {
+          snapshot.forEach(function(childSnapshot) {
+            var dataOb = childSnapshot.val();
+              var dataKey = childSnapshot.key;
+            if ((typeof dataOb === 'object')){
+               const posterUserID = dataOb.posterUserID;
+               if (posterUserID == value2){
+                 arr.push(dataOb);
+                 items[dataKey] = dataOb;
+                 count++;
+               }
+            }
+          })
+          console.log(arr);
+          this.setState({numPosts: getNumPosts(), myPosts: count, data: arr, dataSource: this.ds.cloneWithRows(items)});
+        })
+
+
       }
      }
      catch (error) {
@@ -64,10 +93,9 @@ export default class MoreScreen extends React.Component {
 
   componentDidMount() {
     this._retrieveData();
-    var num = getMyPosts(this.state.userId);
-    var k = 0;
-    console.log(num);
-    this.setState({numPosts: getNumPosts(), myPosts: num});
+
+
+
   }
 
   verifyLogout(){
@@ -89,6 +117,7 @@ export default class MoreScreen extends React.Component {
    onValueChange(value){
      console.log('allow push notifications:', value);
      this.setState({notificationsValue: value});
+     console.log(this.state.data);
    }
 
    showDialog(show){
@@ -97,6 +126,7 @@ export default class MoreScreen extends React.Component {
    }
 
    renderAdminSection(){
+     // console.log(this.state.data)
      if (this.state.admin == false)
       return;
      else{
@@ -130,8 +160,8 @@ export default class MoreScreen extends React.Component {
         <DialogInput isDialogVisible={this.state.isDialogVisible}
           title={"Display Name"}
           message={"Please pick a name to be displayed when you post"}
-          hintInput ={"Bob"}
-          submitInput={ (inputText) => {alert(inputText)} }
+          hintInput ={this.state.displayName}
+          submitInput={ (inputText) => {changeName(inputText, this.state.userId);this.showDialog(false); this.setState({displayName: inputText})} }
           closeDialog={ () => {this.showDialog(false)}}
           modalStyle={{backgroundColor:'#33ADFF'}}>
         </DialogInput>
@@ -199,7 +229,7 @@ export default class MoreScreen extends React.Component {
 
             <SettingsList.Item
               title='Emergencies you posted'
-              onPress={() => this.props.navigation.navigate('Information2') }
+              onPress={() => this.props.navigation.navigate("Information2" ,{ data: this.state.dataSource})}
               arrowIcon={
                 <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
                     <Badge

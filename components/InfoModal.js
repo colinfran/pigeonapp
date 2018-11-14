@@ -38,9 +38,10 @@ export default class InfoModal extends React.Component {
       },
       town: this.props.dataClick.town,
       county: this.props.dataClick.county,
-      upVotes: this.props.dataClick.score,
+      upVotes: null,
 
-      selected: this.props.dataClick.voteSelected,
+
+      selected: null,
 
       commentData: this.props.dataClick.commentData,
 
@@ -52,7 +53,10 @@ export default class InfoModal extends React.Component {
       commentString: "",
 
       commentTextLength: 200,
-      commentMaxLength: 200
+      commentMaxLength: 200,
+
+      alreadyScored: false,
+
     };
 
 
@@ -69,18 +73,21 @@ export default class InfoModal extends React.Component {
   imagePress(press) {
     if (this.state.selected == press) {
       if (press == "up") {
-        this.setState({ upVotes: this.state.upVotes - 1 });
-        updateScore(this.state.postId, this.state.upVotes-1)
+        this.setState({ upVotes: this.state.upVotes - 1});
+        updateScore(this.state.postId, true, this.state.userId);
       }
       this.setState({ selected: "" });
     } else {
       if (press == "up") {
         this.setState({ upVotes: this.state.upVotes + 1 });
-        updateScore(this.state.postId, this.state.upVotes+1)
+        updateScore(this.state.postId, false, this.state.userId)
+
 
       }
       this.setState({ selected: press });
     }
+
+
   }
 
   _renderImageUp() {
@@ -142,13 +149,28 @@ export default class InfoModal extends React.Component {
         // console.log(value);
         var result = value == "true";
         this.setState({ admin: result, userId: id, userfirstname: name});
+        var data = this.props.dataClick.score;
+        console.log(data);
+        var Scorecount = 0;
+        for (var key in data){
+          console.log(key);
+          console.log(id);
+
+          if (key == id){
+              console.log(key);
+              this.setState({selected: "up"});
+
+          }
+          Scorecount++;
+        }
+        this.setState({upVotes: Scorecount});
       }
     } catch (error) {
       // Error retrieving data
     }
   };
 
-  componentDidMount() {
+  componentWillMount() {
     this._retrieveData();
   }
 
@@ -303,12 +325,15 @@ export default class InfoModal extends React.Component {
                   {this.state.commentTextLength}/{this.state.commentMaxLength}
                 </Text>
               </View>
-              <View style={{ flexDirection: "column" }}>
-                <ElementsButton
-                  title="Post"
-                  style={styles.elementsButtonStyle}
+              <View style={{ flexDirection: "column", paddingLeft: 10, }}>
+                <TouchableOpacity
                   onPress={() => this.postComment()}
-                />
+                  style={styles.elementsButtonStyle}
+                  >
+                  <Text style={{margin:10}}>
+                    Post
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
@@ -334,6 +359,7 @@ const styles = StyleSheet.create({
     padding: 5
   },
   elementsButtonStyle: {
-    marginBottom: 12
+    backgroundColor:'grey',
+    marginBottom: 10
   }
 });

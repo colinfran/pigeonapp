@@ -17,7 +17,7 @@ let app = firebase.initializeApp(firebaseConfig);
 export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, authVar, adminVar) {
     firebase.auth().createUserWithEmailAndPassword(emailVar, passwordVar)
     .then(data => {
-      console.log("User ID :- ", data.user.uid);
+      // console.log("User ID :- ", data.user.uid);
       var userID = data.user.uid;
       firebase.database().ref('users/' + userID).set({
         'userID': userID,
@@ -27,7 +27,6 @@ export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, aut
         'lastname': lastNameVar,
         'auth': authVar,
         'admin': adminVar,
-        'score': 0,
         'numPosts': 0,
       });
 
@@ -57,6 +56,7 @@ export function signUserIn(providedEmail, providedPassword){
   var errorCode = "";
   var errorMessage = "";
   firebase.auth().signInWithEmailAndPassword(providedEmail, providedPassword)
+
   .catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
@@ -71,18 +71,44 @@ export function signUserIn(providedEmail, providedPassword){
       }
     });
 
-    var userID = firebase.auth().currentUser.uid;
+    var userId = firebase.auth().currentUser.uid;
 
-    return firebase.database().ref('/users/' + userID).once('value').then(function(snapshot) {
+
+    // console.log(userId)
+    //
+    //   var name;
+    //   var nameRef = firebase.database().ref('/users/' + userId).;
+    //   nameRef.on('value', function(snapshot) {
+    //     // console.log(snapshot.val());
+    //     name = snapshot.val();
+    //     name = name.lastname;
+    //   });
+    //   console.log(name)
+    //
+    firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
       var name = (snapshot.val() && snapshot.val().firstname);
+      var email = providedEmail;
+      var admin = (snapshot.val() && snapshot.val().admin);
+      console.log("name: "+name)
       AsyncStorage.setItem('name', name);
+      AsyncStorage.setItem('email', email);
+
+      AsyncStorage.setItem('userID', userId);
+      AsyncStorage.setItem('admin', ""+admin);
+
     });
+    //   AsyncStorage.setItem('name', name);
+    //   AsyncStorage.setItem('email', email);
+    //   AsyncStorage.setItem('userID', userID);
+    //   console.log('firebaseUserID: '+ userID);
+    //   console.log('email: '+ email);
+    //   console.log('name: '+ name);
+    // });
+    // var name = firebase.auth().currentUser.uid.firstname;
 
-    var name = firebase.auth().currentUser.uid.firstname;
 
 
-    console.log('firebaseUserID: '+ userID);
-    AsyncStorage.setItem('userID', userID);
+
 
     return true;
 
@@ -118,9 +144,6 @@ export function submitEmergencyInfo(postTitle, postDescription, postType, postSc
     length = (snapshot.val() && snapshot.val().legnth) || 'Anonymous';
   });
 
-  firebase.database().ref('/posts/').update({
-    'length': length
-  });
 
   // var ref = firebase.database().ref('posts');
   // console.log("Here2");
@@ -139,7 +162,6 @@ export function submitEmergencyInfo(postTitle, postDescription, postType, postSc
 
 }
 
-
 export function submitComment(postId, commentString, name, numberofCom){
 
   var date = new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate());
@@ -150,7 +172,7 @@ export function submitComment(postId, commentString, name, numberofCom){
   firebase.database().ref('/posts/'+ postId).update({
     'numComments': newNum
   });
-  firebase.database().ref('/posts/'+ postId + "/comments/" + newNum).set({
+  firebase.database().ref('/posts/'+ postId + "/comments/").push({
     'commentString': commentString,
     'postId': postId,
     'name': name,
@@ -164,10 +186,34 @@ export function submitComment(postId, commentString, name, numberofCom){
 
 }
 
-export function updateScore(postId, score){
-  firebase.database().ref('/posts/'+ postId).update({
-    'score': score,
+export function changeName(name, userId){
+  firebase.database().ref('users/' + userId).update({
+    'firstname': name,
   });
+  AsyncStorage.setItem('name', name);
+
+}
+
+export function updateScore(postId, remove, userId){
+  if (remove){
+    firebase.database().ref('/posts/' + postId+ "/score/" + userId).remove();
+  }
+  else{
+    firebase.database().ref('/posts/'+ postId + "/score/" + userId).set({userId: userId}).then(function (snapshot) {
+    });
+  }
+
+
+
+
+  // firebase.database().ref('/posts/'+ postId).update({
+  //   'score': {
+  //     'score': score,
+  //     'users':{
+  //
+  //     }
+  //   }
+  // });
 }
 
 export function getNumPosts(){
@@ -186,22 +232,38 @@ export function getNumPosts(){
 
 export function getMyPosts(userId){
 
-  var i = 0;
 
-  // firebase.database().ref('/users/' + userId + '/numPosts').on('value', (snapshot) => {
-  //   // get children as an array
+
+
+  var items = [];
+  var count = 0;
+  firebase.database().ref('posts/').on('value', (snapshot) => {
+    // get children as an array
+    for(var key in snapshot.val()){
+       var dataOb = snapshot.val()[key];
+       if ((typeof dataOb === 'object')){
+          const posterUserID = Object.values("posterUserID")
+          if (posterUserID == userId)
+            count++;
+       }
+    }
+
+  })
+  console.log(count);
+  return count;
+
+
+  // console.log("testerino");
+  // var i;
+  // var mycountRef = firebase.database().ref('/posts/');
+  // mycountRef.on('value', function(snapshot) {
   //   i = snapshot.val();
+  // });
+  // console.log("I: " + i);
+  // for (var j = 0; j<i.length; j++)
+  // return i;
   //
-  // })
-
-  console.log("testerino");
-  var i;
-  var mycountRef = firebase.database().ref('/users/' + userId + '/numPosts');
-  mycountRef.on('value', function(snapshot) {
-    i = snapshot.val();
-  });
-  console.log("I: " + i);
-  return i;
+  //
 
 }
 
@@ -213,6 +275,7 @@ export function deleteData(postId){
 
 export function getEmergencyData(){
   var dataArray = { data: null};
+  var items = [];
   var postsRef = firebase.database().ref('/posts');
   postsRef.on('value', function(snapshot) {
     // snapshot.val() is the dictionary with all your keys/values from the '/store' path
@@ -224,14 +287,15 @@ export function getEmergencyData(){
     //     i++;
 
     // }
-      dataArray.data = snapshot.val();
-      // console.log(JSON.stringify(snapshot.val()));
-      var data = snapshot.val();
-      // console.log(data);
-      return data;
+    for(var key in snapshot.val()){
+       var dataOb = snapshot.val()[key];
+       if ((typeof dataOb === 'object'))
+         items.push( dataOb );
+   }
+
   })
   // console.log("DataArray: "+ JSON.stringify(dataArray))
-  return dataArray;
+  return items;
 }
 
 export const isLoggedIn = async () => {
@@ -245,7 +309,7 @@ export const isLoggedIn = async () => {
 }
 
 export const logout = async () => {
-
+  AsyncStorage.clear();
   try {
        await firebase.auth().signOut();
    } catch (e) {
