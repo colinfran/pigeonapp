@@ -47,6 +47,10 @@ export default class MapScreen extends React.Component {
         key: ""
       },
       errorMessage: null,
+      userlocation: {
+        latitude: 0,
+        longitude: 0
+      }
 
     };
     this.itemsRef = firebase.database().ref('/posts');
@@ -105,9 +109,10 @@ export default class MapScreen extends React.Component {
     });
   };
 
-  _selectedInfo = () => {
-    // this.setState({selectedMarker: marker})
-    this._toggleModal();
+  _selectedInfo = (marker) => {
+    this.setState({selectedMarker: marker});
+
+    // this._toggleModal();
     console.log(
       "User has selected new marker: --> " + JSON.stringify(this.state.selectedMarker)
     );
@@ -143,6 +148,8 @@ export default class MapScreen extends React.Component {
   }
 
 
+
+
   render() {
     let text = 'Waiting..';
     if (this.state.errorMessage) {
@@ -160,8 +167,8 @@ export default class MapScreen extends React.Component {
             latitudeDelta: 0.1,
             longitudeDelta: 0.1
           }}
+          initialRegion={this.state.userlocation}
           userLocationAnnotationTitle={""}
-
           showsUserLocation={true}
         >
           {this.state.markers.map(marker => (
@@ -171,9 +178,9 @@ export default class MapScreen extends React.Component {
             <MapView.Marker
               key={marker.key}
               coordinate={marker.postRegion}
-              onCalloutPress={this._selectedInfo}
+              onCalloutPress={() => {this._selectedInfo(marker);this._toggleModal()}}
               onPress={() => {
-                this.setState({selectedMarker: marker})
+                this.setState({selectedMarker: marker, region: marker.postRegion});
               }}
               image={markerImages[marker.type]}
             >

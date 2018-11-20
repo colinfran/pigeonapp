@@ -70,9 +70,14 @@ export default class Comments extends  React.Component {
               <View style={styles.content}>
                 <View style={styles.contentHeader}>
                   <Text  style={styles.name}>{Notification.name}</Text>
-                  <Text style={styles.time}>
-                    {Notification.time}
-                  </Text>
+                  <View style={{flexDirection:'column'}}>
+                    <Text style={styles.time}>
+                      {Notification.date}
+                    </Text>
+                    <Text style={styles.time}>
+                      {Notification.time}
+                    </Text>
+                  </View>
                 </View>
                 <Text rkType='primary3 mediumLine'>{Notification.commentString}</Text>
               </View>
@@ -116,6 +121,7 @@ const styles = StyleSheet.create({
   time:{
     fontSize:11,
     color:"#808080",
+    textAlign:'right'
   },
   name:{
     fontSize:16,

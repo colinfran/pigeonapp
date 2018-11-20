@@ -14,7 +14,7 @@ const firebaseConfig = {
 let app = firebase.initializeApp(firebaseConfig);
 
 
-export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, authVar, adminVar) {
+export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, authVar, adminVar, tokenVar) {
     firebase.auth().createUserWithEmailAndPassword(emailVar, passwordVar)
     .then(data => {
       // console.log("User ID :- ", data.user.uid);
@@ -28,6 +28,12 @@ export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, aut
         'auth': authVar,
         'admin': adminVar,
         'numPosts': 0,
+        'token':tokenVar,
+      });
+      firebase.auth().currentUser.sendEmailVerification().then(function() {
+       // Email sent.
+      }, function(error) {
+       // An error happened.
       });
 
       console.log('firebaseUserID: '+ userID);
@@ -115,7 +121,16 @@ export function signUserIn(providedEmail, providedPassword){
 }
 
 export function submitEmergencyInfo(postTitle, postDescription, postType, postScore, posterUserID, postRegion, postVerified, town, county){
-
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1;
+  var yyyy = today.getFullYear();
+  if (dd < 10)
+    dd = '0'+mm;
+  if(mm < 10)
+      mm = '0'+mm
+  today = mm + '/' + dd + '/' + yyyy;
+  var time = new Date().toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
   var data = {
     'title': postTitle,
     'description': postDescription,
@@ -127,7 +142,13 @@ export function submitEmergencyInfo(postTitle, postDescription, postType, postSc
     'postId': null,
     'numComments':0,
     'town': town,
-    'county': county
+    'county': county,
+    'verified': {
+      'verified': false,
+      'verifier': "",
+    },
+    'date': today,
+    'time': time
   }
 
   var ref = firebase.app().database().ref();
@@ -162,9 +183,24 @@ export function submitEmergencyInfo(postTitle, postDescription, postType, postSc
 
 }
 
-export function submitComment(postId, commentString, name, numberofCom){
+export function updateUserPushSettings(userId, value){
+  firebase.database().ref('/users/' + userId).update({
+    'pushNotifications': value,
+  });
 
-  var date = new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate());
+}
+
+
+export function submitComment(postId, commentString, name, numberofCom){
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1;
+  var yyyy = today.getFullYear();
+  if (dd < 10)
+    dd = '0'+mm;
+  if(mm < 10)
+      mm = '0'+mm
+  today = mm + '/' + dd + '/' + yyyy;
   var time = new Date().toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3");
 
 
@@ -178,7 +214,7 @@ export function submitComment(postId, commentString, name, numberofCom){
     'name': name,
     'id': newNum,
     'time': time,
-    'date': date,
+    'date': today,
   });
 
 
@@ -222,11 +258,12 @@ export function getNumPosts(){
   firebase.database().ref('/posts/').on('value', (snapshot) => {
     // get children as an array
     for(var key in snapshot.val()){
-       i++;
+      if (snapshot.val()[key].verified.verified == false)
+        i++;
    }
 
   });
-  console.log(i);
+  // console.log(i);
   return i;
 }
 
@@ -237,7 +274,7 @@ export function getMyPosts(userId){
 
   var items = [];
   var count = 0;
-  firebase.database().ref('posts/').on('value', (snapshot) => {
+  firebase.database().ref('/posts/').on('value', (snapshot) => {
     // get children as an array
     for(var key in snapshot.val()){
        var dataOb = snapshot.val()[key];
@@ -249,7 +286,7 @@ export function getMyPosts(userId){
     }
 
   })
-  console.log(count);
+  // console.log(count);
   return count;
 
 
@@ -267,8 +304,15 @@ export function getMyPosts(userId){
 
 }
 
-export function deleteData(postId){
+export function removePosts(postId){
     firebase.database().ref('/posts/' + postId).remove();
+}
+
+export function verifyPosts(postId, verifierId){
+    firebase.database().ref('/posts/' + postId + '/verified').update({
+      'verified': true,
+      'verifier': verifierId
+    });
 }
 
 
@@ -296,6 +340,14 @@ export function getEmergencyData(){
   })
   // console.log("DataArray: "+ JSON.stringify(dataArray))
   return items;
+}
+
+export function verifyAccountEmail(){
+  firebase.auth().currentUser.sendEmailVerification().then(function() {
+   // Email sent.
+  }, function(error) {
+   // An error happened.
+  });
 }
 
 export const isLoggedIn = async () => {

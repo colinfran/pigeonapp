@@ -8,12 +8,14 @@ import {
   Dimensions,
   Image,
   AsyncStorage,
-  TextInput
+  TextInput,
+  Platform,
+  Share
 } from "react-native";
 import Modal from "react-native-modal";
 import Comments from "./Comments";
 import renderIf from "../assets/renderIf";
-import {submitComment, updateScore} from '../api/auth'
+import {submitComment, updateScore, removePosts, verifyPosts} from '../api/auth'
 
 import { Button as ElementsButton } from "react-native-elements";
 
@@ -38,9 +40,11 @@ export default class AdminInfoModal extends React.Component {
       },
       town: this.props.dataClick.town,
       county: this.props.dataClick.county,
-      upVotes: this.props.dataClick.score,
+      upVotes: null,
+      date: this.props.dataClick.date,
+      time: this.props.dataClick.time,
 
-      selected: this.props.dataClick.voteSelected,
+      selected: null,
 
       commentData: this.props.dataClick.commentData,
 
@@ -52,7 +56,11 @@ export default class AdminInfoModal extends React.Component {
       commentString: "",
 
       commentTextLength: 200,
-      commentMaxLength: 200
+      commentMaxLength: 200,
+
+      alreadyScored: false,
+
+      verified: this.props.dataClick.verified.verified,
     };
 
 
@@ -63,30 +71,38 @@ export default class AdminInfoModal extends React.Component {
     this.showPostedComments = this.showPostedComments.bind(this);
     this.onChangeCommentText = this.onChangeCommentText.bind(this);
     this.postComment = this.postComment.bind(this);
+    this.deletePost = this.deletePost.bind(this);
+    this.renderVerified = this.renderVerified.bind(this);
+    this.shareIcon = this.shareIcon.bind(this);
+    this.shareButton = this.shareButton.bind(this);
+    this.verifyPost = this.verifyPost.bind(this);
 
   }
 
   imagePress(press) {
     if (this.state.selected == press) {
       if (press == "up") {
-        this.setState({ upVotes: this.state.upVotes - 1 });
-        updateScore(this.state.postId, this.state.upVotes-1)
+        this.setState({ upVotes: this.state.upVotes - 1});
+        updateScore(this.state.postId, true, this.state.userId);
       }
       this.setState({ selected: "" });
     } else {
       if (press == "up") {
         this.setState({ upVotes: this.state.upVotes + 1 });
-        updateScore(this.state.postId, this.state.upVotes+1)
+        updateScore(this.state.postId, false, this.state.userId)
+
 
       }
       this.setState({ selected: press });
     }
+
+
   }
 
   _renderImageUp() {
     if (this.state.selected == "up")
       return (
-        <View style={{ height: "100%", width: "100%" }}>
+        <View style={{ }}>
           <Image
             style={{ height: 20, width: 20 }}
             resizeMethod="resize"
@@ -96,7 +112,7 @@ export default class AdminInfoModal extends React.Component {
       );
     else
       return (
-        <View style={{ height: "100%", width: "100%" }}>
+        <View style={{ }}>
           <Image
             style={{ height: 20, width: 20 }}
             resizeMethod="resize"
@@ -142,13 +158,28 @@ export default class AdminInfoModal extends React.Component {
         // console.log(value);
         var result = value == "true";
         this.setState({ admin: result, userId: id, userfirstname: name});
+        var data = this.props.dataClick.score;
+        // console.log(data);
+        var Scorecount = 0;
+        for (var key in data){
+          // console.log(key);
+          // console.log(id);
+
+          if (key == id){
+              // console.log(key);
+              this.setState({selected: "up"});
+
+          }
+          Scorecount++;
+        }
+        this.setState({upVotes: Scorecount});
       }
     } catch (error) {
       // Error retrieving data
     }
   };
 
-  componentDidMount() {
+  componentWillMount() {
     this._retrieveData();
   }
 
@@ -192,6 +223,68 @@ export default class AdminInfoModal extends React.Component {
     });
   }
 
+  deletePost(postId){
+    removePosts(postId);
+    this.props.toggle();
+  }
+
+  verifyPost(postId, userId){
+    verifyPosts(postId, userId);
+    this.props.toggle();
+  }
+
+  renderVerified(){
+    console.log("Verified: " + this.state.verified);
+    if (this.state.verified){
+      return (
+        <View style={{marginTop: 15, flexDirection: 'row', borderWidth: 0.8, borderColor: "lightgrey", width:'100%',  paddingLeft: 20,paddingRight: 20, justifyContent: 'center',paddingTop: 10,paddingBottom: 10,textAlign:'center'}}>
+          <Image
+            style={{ height: 20, width: 20, alignItems: 'center', alignContent: 'center' }}
+            resizeMethod="resize"
+            source={require("../assets/verify.png")}
+            />
+          <Text style={{textAlign:'center'}}>
+            <Text>This post has been verified.</Text>
+          </Text>
+        </View>
+      );
+    }
+    else {
+      return (
+        <View style={{marginTop: 15, borderWidth: 0.8, borderColor: "lightgrey", width:'100%',  paddingLeft: 20,paddingRight: 20, justifyContent: 'center',paddingTop: 10,paddingBottom: 10}}>
+          <Text style={{textAlign:'center'}}>
+            <Text>This post has{" "}</Text><Text style={{textDecorationLine: 'underline'}}>not</Text><Text>{" "}been verified.</Text>
+          </Text>
+        </View>
+      );
+    }
+  }
+
+  shareButton(){
+    Share.share(
+            {
+                message: "Hello, I just want to let you know that I was notified that there is an emergency in " + this.state.town + ", " + this.state.county+ ". Please be careful!"
+            })
+            .then(result => console.log(result))
+            .catch(err => console.log(err));
+  }
+
+  shareIcon(){
+    let iconName;
+    if (Platform.OS === "ios"){
+      iconName = 'ios-share-alt';
+    }else{
+      iconName = 'md-share-alt'
+    }
+    return (
+      <TouchableOpacity
+        onPress={() => this.shareButton()}
+        >
+        <Ionicons style={{}} name={iconName} size={25} color={"darkgrey"} />
+      </TouchableOpacity>
+    );
+  }
+
   render() {
     // console.log(this.props.dataClick);
     return (
@@ -204,42 +297,52 @@ export default class AdminInfoModal extends React.Component {
       >
         <View style={{ flex: 1 }}>
           <View style={{ padding: 20 }}>
-            <Text>{this.state.title}</Text>
-            <Text>{this.state.description}</Text>
-            <Text>Lat: {this.state.coordinates.latitude}</Text>
-            <Text>Long: {this.state.coordinates.longitude}</Text>
+            <View style={{borderBottomWidth: 0.8, borderColor: "lightgrey", width:'100%', justifyContent: 'center',paddingTop: 10,paddingBottom: 5}}>
+              <Text style={{fontSize:'18'}}>{this.state.title}</Text>
+            </View>
+            <Text style={{fontSize:'16',paddingTop: 5,paddingBottom: 3}}>{this.state.description}</Text>
             <Text>
               {this.state.town}, {this.state.county}, USA
             </Text>
+            <Text style={{fontSize:'13',paddingTop: 3}}>Lat: {this.state.coordinates.latitude}</Text>
+            <Text style={{fontSize:'13'}}>Long: {this.state.coordinates.longitude}</Text>
+
+            <Text style={{fontSize:'12',paddingTop: 5}}>
+              <Text>Posted on{" "}{this.state.date}{" at "}{this.state.time}</Text>
+            </Text>
+
           </View>
-          <View
-            style={{
-              flexDirection: "column",
-              height: "15%",
-              paddingTop: 10,
-              paddingBottom: 30,
-              alignItems: "center"
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
+          <View style={{flexDirection: "row" , paddingBottom:20, justifyContent:'space-around'}}>
+            <View style={{flexDirection: "row"}}>
               <TouchableOpacity
                 style={{ paddingRight: 5 }}
                 onPress={() => this.imagePress("up")}
               >
-                <View style={{ width: "100%", height: "100%" }}>
+                <View style={{ }}>
                   {this._renderImageUp()}
                 </View>
               </TouchableOpacity>
-              <View style={{ height: 15, paddingRight: 10 }}>
-                <Text>{this.state.upVotes}</Text>
-              </View>
+              <Text>{this.state.upVotes}</Text>
+
             </View>
+            {this.shareIcon()}
           </View>
+
           {renderIf(this.state.admin,
-            <View style={{borderBottomWidth: 0,borderWidth: 0.8, borderColor: "lightgrey", width:'100%',  paddingLeft: 20,paddingRight: 20, justifyContent: 'center',paddingTop: 10,paddingBottom: 10,}}>
-              <TouchableOpacity>
-                <Text style={{ color: "blue", textAlign:'center', alignSelf: "center"}}>Remove this post</Text>
-              </TouchableOpacity>
+            <View style={{flexDirection: 'row',borderBottomWidth: 0,borderWidth: 0.8, borderColor: "lightgrey", width:'100%',  paddingLeft: 20,paddingRight: 20, justifyContent: 'space-between',paddingTop: 10,paddingBottom: 10,}}>
+              <View style={{flex:1, borderRightWidth: 0.8, borderColor: "lightgrey"}}>
+                <TouchableOpacity
+                  onPress={() => this.verifyPost(this.state.postId, this.state.userId)}
+                  >
+                  <Text style={{ color: "blue", textAlign:'center', alignSelf: "center"}}>Accept</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{flex:1}}>
+                <TouchableOpacity
+                  onPress={() => this.deletePost(this.state.postId)}>
+                  <Text style={{ color: "blue", textAlign:'center', alignSelf: "center"}}>Reject</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
           <View
@@ -296,6 +399,9 @@ export default class AdminInfoModal extends React.Component {
                   value={this.state.commentString}
                   onChangeText={this.onChangeCommentText.bind(this)}
                   multiline={true}
+                  onSubmitEditing={() => this.postComment()}
+                  returnKeyType={"go"}
+
                 />
                 <Text
                   style={{ fontSize: 10, color: "black", textAlign: "right" }}
@@ -303,12 +409,15 @@ export default class AdminInfoModal extends React.Component {
                   {this.state.commentTextLength}/{this.state.commentMaxLength}
                 </Text>
               </View>
-              <View style={{ flexDirection: "column" }}>
-                <ElementsButton
-                  title="Post"
-                  style={styles.elementsButtonStyle}
+              <View style={{ flexDirection: "column", paddingLeft: 10, }}>
+                <TouchableOpacity
                   onPress={() => this.postComment()}
-                />
+                  style={styles.elementsButtonStyle}
+                  >
+                  <Text style={{margin:10}}>
+                    Post
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
@@ -334,6 +443,7 @@ const styles = StyleSheet.create({
     padding: 5
   },
   elementsButtonStyle: {
-    marginBottom: 12
+    backgroundColor:'grey',
+    marginBottom: 10
   }
 });

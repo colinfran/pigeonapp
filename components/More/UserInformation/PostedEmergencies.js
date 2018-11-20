@@ -25,9 +25,19 @@ function capitalize(str) {
 }
 
 export default class PostedEmergencies extends React.Component {
+
+  static navigationOptions = {
+    title: "Emergencies You Posted",
+    headerStyle: {
+      backgroundColor: "#33ADFF"
+    },
+    headerTintColor: "#fff"
+  };
+
+
   constructor(props) {
     super(props);
-
+    this._selectedInfo = this._selectedInfo.bind(this);
     this.state = {
       dataSource: this.props.navigation.state.params.data,
       isModalVisible: false,
@@ -47,7 +57,7 @@ export default class PostedEmergencies extends React.Component {
     };
 
     // this.itemsRef = firebase.database().ref('/posts');
-    // this.renderItem = this.renderItem.bind(this)
+    this.renderItem = this.renderItem.bind(this)
   // }
 
 
@@ -136,7 +146,7 @@ export default class PostedEmergencies extends React.Component {
     console.log("Toggle: " + this.state.isModalVisible);
   };
 
-  _selectedInfo = (data) => {
+  _selectedInfo(data) {
     this.setState({
       selectedMarker: data
     });

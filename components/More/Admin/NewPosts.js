@@ -58,8 +58,14 @@ export default class NewPosts extends React.Component {
      var items = [];
      for(var key in snapshot.val()){
 				var dataOb = snapshot.val()[key];
-        if ((typeof dataOb === 'object'))
-          items.push( dataOb );
+        if ((typeof dataOb === 'object')){
+          // var ver = dataOb.child("verified");
+          // var ver = dataOb.child("verified/verified").val(); // "Ada"
+          if (dataOb.verified.verified == false)
+            items.push( dataOb );
+          // console.log(dataOb)
+          // console.log("is Verified: " + ver);
+        }
     }
 
      this.setState({

@@ -151,6 +151,8 @@ export default class AddEmergencyInfo extends React.Component {
               descriptionMaxLength={50}
               style={styles.titleInput}
               onChangeText={this.onChangeTitleText.bind(this)}
+              onSubmitEditing={() => { this.descriptionTextInput.focus(); }}
+
             />
             <Text style={{ fontSize: 10, color: "black", textAlign: "right" }}>
               {this.state.titleTextLength}/50
@@ -161,6 +163,7 @@ export default class AddEmergencyInfo extends React.Component {
             <TextInput
               editable={true}
               descriptionMaxLength={500}
+              ref={(input) => { this.descriptionTextInput = input; }}
               style={styles.descriptionInput}
               onChangeText={this.onChangeDescriptionText.bind(this)}
               multiline={true}

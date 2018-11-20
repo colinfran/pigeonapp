@@ -70,7 +70,7 @@ export default class AddEmergencyMap extends React.Component {
     this.setDistance = this.setDistance.bind(this);
     this.setUnits = this.setUnits.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.onPoiClick = this.onPoiClick.bind(this);
+
   }
 
   setDirection(text) {
@@ -116,7 +116,11 @@ export default class AddEmergencyMap extends React.Component {
           longitude: position.coords.longitude,
           latitudeDelta: 0.3,
           longitudeDelta: 0.3
-        }
+        },
+        pressCoordinates:  {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
       });
     });
   }
@@ -125,10 +129,10 @@ export default class AddEmergencyMap extends React.Component {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  onPoiClick(e) {
-    const poi = e.nativeEvent;
-    this.setState({poi});
-  }
+  // onPoiClick(e) {
+  //   const poi = e.nativeEvent;
+  //   this.setState({poi});
+  // }
 
   render() {
     let direction = [{ value: 'North', }, { value: 'South', }, { value: 'East', }, { value: 'West', }, { value: 'North-West', }, { value: 'North-East', }, { value: 'South-West', }, { value: 'South-East', }];
@@ -181,16 +185,14 @@ export default class AddEmergencyMap extends React.Component {
                 rotateEnabled={false}
                 scrollEnabled={false}
                 zoomEnabled={false}
-                onPoiClick={this.onPoiClick}>
-                <MapView.Marker draggable
-                  coordinate={this.state.region}
-                  onDragEnd={(e) => this.setState({ pressCoordinates: e.nativeEvent.coordinate })}
-                />
-                <MapView.Callout tooltip={true} />
+                onPress={(e) => this.setState({ pressCoordinates: e.nativeEvent.coordinate})}
+                >
+
+                <MapView.Marker coordinate={this.state.pressCoordinates} />
               </MapView>
             </View>
 
-            <Text>Please drag the marker in the above map to the exact location of this emergency.</Text>
+            <Text>Press anywhere on the map to set the exact location of this emergency.</Text>
             <Button
               style={{ paddingTop: 10 }}
               title="Continue"

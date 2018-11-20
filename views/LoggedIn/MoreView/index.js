@@ -13,8 +13,9 @@ import MoreHelpfulInfo3 from "../../../components/More/HelpfulInfo/MoreHelpfulIn
 import DisplayName from "../../../components/More/UserInformation/DisplayName";
 import PostedEmergencies from "../../../components/More/UserInformation/PostedEmergencies";
 
-import UserSettings1 from "../../../components/More/UserSettings/UserSettings1";
-import UserSettings2 from "../../../components/More/UserSettings/UserSettings2";
+import UserSettings from "../../../components/More/UserSettings/UserSettings";
+import Password from "../../../components/More/UserSettings/Password";
+
 
 import AboutApp from "../../../components/More/About/AboutApp";
 import AboutCreators from "../../../components/More/About/AboutCreators";
@@ -22,6 +23,7 @@ import AboutLegal from "../../../components/More/About/AboutLegal";
 
 import NewPosts from "../../../components/More/Admin/NewPosts";
 
+import VerifyAccount from "../../../components/More/VerifyAccount";
 
 const AddStack = createStackNavigator(
   {
@@ -43,11 +45,11 @@ const AddStack = createStackNavigator(
     Information2: {
       screen: PostedEmergencies,
     },
-    Settings1: {
-      screen: UserSettings1,
+    Settings: {
+      screen: UserSettings,
     },
-    Settings2: {
-      screen: UserSettings2,
+    Password: {
+      screen: Password,
     },
     About1: {
       screen: AboutApp,
@@ -60,6 +62,9 @@ const AddStack = createStackNavigator(
     },
     Admin1: {
       screen: NewPosts,
+    },
+    Verify: {
+      screen: VerifyAccount,
     }
   },
   {

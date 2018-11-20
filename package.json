@@ -24,6 +24,7 @@
     "react-native-floating-action": "^1.13.0",
     "react-native-geocoding": "^0.3.0",
     "react-native-grid-component": "^1.1.0",
+    "react-native-keyboard-accessory": "^0.1.9",
     "react-native-maps": "^0.21.0",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-modal": "^6.5.0",

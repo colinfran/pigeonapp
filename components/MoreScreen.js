@@ -5,8 +5,9 @@ import { Badge } from 'react-native-elements';
 import { logout } from '../api/auth'
 import SettingsList from 'react-native-settings-list';
 import DialogInput from 'react-native-dialog-input';
-import { getNumPosts, getMyPosts, changeName } from '../api/auth'
+import { getNumPosts, getMyPosts, changeName, updateUserPushSettings } from '../api/auth'
 import * as firebase from 'firebase';
+import { Permissions, Notifications } from 'expo';
 
 
 var list = [];
@@ -16,7 +17,7 @@ export default class MoreScreen extends React.Component {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
 
     this.onLogout = this.onLogout.bind(this);
-    this.onValueChange = this.onValueChange.bind(this);
+
     this.verifyLogout = this.verifyLogout.bind(this);
     this.showDialog = this.showDialog.bind(this);
 
@@ -33,9 +34,13 @@ export default class MoreScreen extends React.Component {
       data: null,
       keys: null,
       dataSource: this.ds.cloneWithRows(list),
+      verifiedAccount: false,
 
     };
     this.renderAdminSection = this.renderAdminSection.bind(this);
+    this.renderPleaseVerify = this.renderPleaseVerify.bind(this);
+    this.onPressNewPosts = this.onPressNewPosts.bind(this);
+
 
   }
 
@@ -65,6 +70,13 @@ export default class MoreScreen extends React.Component {
         var keysArray = [];
         var arr = [];
         var count = 0;
+        var userId = firebase.auth().currentUser.uid;
+        firebase.database().ref('/users/' + value2).on('value', (snapshot) => {
+          var push = (snapshot.val() && snapshot.val().pushNotifications);
+          this.setState({notificationsValue: push})
+          console.log("got push: " + push);
+        });
+
         firebase.database().ref('/posts/').on('value', (snapshot) => {
           snapshot.forEach(function(childSnapshot) {
             var dataOb = childSnapshot.val();
@@ -77,10 +89,21 @@ export default class MoreScreen extends React.Component {
                  count++;
                }
             }
+            console.log("Posts: "+count)
           })
-          console.log(arr);
+          // console.log(arr);
           this.setState({numPosts: getNumPosts(), myPosts: count, data: arr, dataSource: this.ds.cloneWithRows(items)});
         })
+
+        if (firebase.auth().currentUser.emailVerified === false) {
+          console.log("EmailVerified: false");
+          this.setState({verifiedAccount: false});
+        }
+        else{
+          this.setState({verifiedAccount: true});
+          console.log("EmailVerified: true");
+
+        }
 
 
       }
@@ -88,15 +111,13 @@ export default class MoreScreen extends React.Component {
      catch (error) {
        // Error retrieving data
      }
-}
+   }
 
 
   componentDidMount() {
     this._retrieveData();
-
-
-
   }
+
 
   verifyLogout(){
     Alert.alert(
@@ -114,11 +135,7 @@ export default class MoreScreen extends React.Component {
      this.props.navigation.navigate('Login');
    }
 
-   onValueChange(value){
-     console.log('allow push notifications:', value);
-     this.setState({notificationsValue: value});
-     console.log(this.state.data);
-   }
+
 
    showDialog(show){
      this.setState({isDialogVisible: show});
@@ -137,7 +154,7 @@ export default class MoreScreen extends React.Component {
 
          <SettingsList.Item
            title='Review New Posts'
-           onPress={() => this.props.navigation.navigate('Admin1') }
+           onPress={this.onPressNewPosts}
            arrowIcon={
              <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
                  <Badge
@@ -151,6 +168,34 @@ export default class MoreScreen extends React.Component {
            }
          />
        ]);
+     }
+   }
+
+   onPressNewPosts(){
+     if (this.state.numPosts != 0){
+       this.props.navigation.navigate('Admin1')
+     }
+   }
+
+   renderPleaseVerify(){
+     if (!this.state.verifiedAccount){
+       return (
+         <SettingsList.Item
+              icon={
+                <View style={{height:30,marginLeft:10,alignSelf:'center'}}>
+                  <Image style={{alignSelf:'center',height:30, width:30}} source={require('../assets/about.png')}/>
+                </View>
+              }
+              itemWidth={50}
+              title='Your Account has not been verified'
+              onPress={() => this.props.navigation.navigate('Verify') }
+              arrowIcon={
+                <View style={{marginRight:15,alignSelf:'center'}}>
+                  <Image style={{height: 20, width:20, alignSelf:'center', color:'red'}} source={require('../assets/more.png')}/>
+                </View>
+              }
+            />
+       );
      }
    }
 
@@ -206,11 +251,8 @@ export default class MoreScreen extends React.Component {
           	<SettingsList.Header
               headerText=' '
               headerStyle={{marginTop:25}}
-              arrowIcon={
-                <View style={{marginRight:15,alignSelf:'center'}}>
-                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
-                </View>
-              }/>
+              />
+            {this.renderPleaseVerify()}
             <SettingsList.Item
               titleInfo={this.state.email}
               hasNavArrow={false}
@@ -226,51 +268,20 @@ export default class MoreScreen extends React.Component {
                 </View>
               }
             />
-
-            <SettingsList.Item
-              title='Emergencies you posted'
-              onPress={() => this.props.navigation.navigate("Information2" ,{ data: this.state.dataSource})}
-              arrowIcon={
-                <View style={{flexDirection:'row', marginRight:15,alignSelf:'center'}}>
-                    <Badge
-                      value={this.state.myPosts}
-                      containerStyle={{ backgroundColor: 'lightgrey', marginRight:10 }}
-                      textStyle={{ color: 'black' }}
-                    />
-                  <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
-
-                </View>
-              }
-            />
-          <SettingsList.Header headerText=' ' headerStyle={{marginTop:25}}/>
             <SettingsList.Item title='Settings'
-              onPress={() => this.props.navigation.navigate('Settings2') }
+              onPress={() => this.props.navigation.navigate('Settings', { data: this.state.dataSource, myPosts: this.state.myPosts, userId: this.state.userId, notificationsValue: this.state.notificationsValue}) }
               arrowIcon={
                 <View style={{marginRight:15,alignSelf:'center'}}>
                   <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
                 </View>
               }
               />
-            <SettingsList.Item
-              hasNavArrow={false}
-              switchState={this.state.notificationsValue}
-              switchOnValueChange={this.onValueChange}
-              hasSwitch={true}
-              title='Allow Push Notifications'/>
+
 
             <SettingsList.Header headerText=' ' headerStyle={{marginTop:25}}/>
               <SettingsList.Item
                 title='About this app'
                 onPress={() => this.props.navigation.navigate('About1') }
-                arrowIcon={
-                  <View style={{marginRight:15,alignSelf:'center'}}>
-                    <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>
-                  </View>
-                }
-                />
-              <SettingsList.Item
-                title='About the creators'
-                onPress={() => this.props.navigation.navigate('About2') }
                 arrowIcon={
                   <View style={{marginRight:15,alignSelf:'center'}}>
                     <Image style={{height: 20, width:20, alignSelf:'center'}} source={require('../assets/more.png')}/>

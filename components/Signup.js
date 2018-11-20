@@ -27,9 +27,11 @@ export default class SignUp extends React.Component {
       passwordCheck: "",
       driverslicense: "",
       admin: false,
+      token: this.props.navigation.state.params.token,
 
     };
   }
+
 
 
   async onLogin() {
@@ -48,7 +50,7 @@ export default class SignUp extends React.Component {
     AsyncStorage.setItem('driverslicense', this.state.driverslicense);
     AsyncStorage.setItem('admin', this.state.admin+'');
 
-    var loggedIn = createUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, this.state.driverslicense, this.state.admin)
+    var loggedIn = createUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, this.state.driverslicense, this.state.admin, this.state.token)
 
     if (loggedIn)
       this.props.navigation.navigate('Emergencies');
@@ -67,32 +69,50 @@ export default class SignUp extends React.Component {
             style={{width:'45%'}}
             placeholder="First Name"
             onChangeText={(value) => this.setState({firstname: value})}
+            returnKeyType = {"next"}
+            onSubmitEditing={() => { this.lastnameTextInput.focus(); }}
+            blurOnSubmit={false}
             value={this.state.name}/>
             <TextInput text50 dark10
+              returnKeyType = {"next"}
+              ref={(input) => { this.lastnameTextInput = input; }}
               style={{width:'45%'}}
               placeholder="Last Name"
               onChangeText={(value) => this.setState({lastname: value})}
+              onSubmitEditing={() => { this.emailTextInput.focus(); }}
               value={this.state.name}/>
+
         </View>
 
         <TextInput text50 dark10
           placeholder="Email"
+          returnKeyType = {"next"}
+          ref={(input) => { this.emailTextInput = input; }}
           onChangeText={(value) => this.setState({email: value})}
+          onSubmitEditing={() => { this.passwordTextInput.focus(); }}
           value={this.state.email}/>
         <TextInput text50 dark10
           placeholder="Password"
+          ref={(input) => { this.passwordTextInput = input; }}
+          returnKeyType = {"next"}
           secureTextEntry
+          onSubmitEditing={() => { this.password2TextInput.focus(); }}
           onChangeText={(value) => this.setState({password: value})}
           value={this.state.password}/>
         <TextInput text50 dark10
+          returnKeyType = {"next"}
+          ref={(input) => { this.password2TextInput = input; }}
           placeholder="Verify Password"
           secureTextEntry
           onChangeText={(value) => this.setState({passwordCheck: value})}
+          onSubmitEditing={() => { this.dlTextInput.focus(); }}
           value={this.state.passwordCheck}/>
         <TextInput text50 dark10
+          returnKeyType={"done"}
           placeholder="Drivers License"
           secureTextEntry
           onChangeText={(value) => this.setState({driverslicense: value})}
+          ref={(input) => { this.dlTextInput = input; }}
           value={this.state.driverslicense}/>
         <CheckBox
           style={{padding: 10}}
