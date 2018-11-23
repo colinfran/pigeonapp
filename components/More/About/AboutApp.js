@@ -16,7 +16,7 @@ export default class AboutApp extends React.Component {
   static navigationOptions = {
     title: "About This App",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

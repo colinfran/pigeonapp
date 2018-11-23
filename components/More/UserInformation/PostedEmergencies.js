@@ -29,7 +29,7 @@ export default class PostedEmergencies extends React.Component {
   static navigationOptions = {
     title: "Emergencies You Posted",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

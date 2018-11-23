@@ -14,7 +14,7 @@ export default class AddEmergencyPost extends Component {
   static navigationOptions = {
     title: 'Posting An Emegency',
     headerStyle: {
-      backgroundColor: '#33ADFF',
+      backgroundColor: 'red',
     },
     headerTintColor: '#fff',
   };

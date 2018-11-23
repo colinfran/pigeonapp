@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
 	headerStyle: {
 		borderBottomWidth: 1,
 		borderColor: '#DCDCDC',
-		backgroundColor: '#33ADFF'
+		backgroundColor: 'red'
 	},
 	labelStyle: {
 		fontSize: 15,

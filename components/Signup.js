@@ -9,7 +9,7 @@ import * as firebase from 'firebase';
 
 
 Colors.loadColors({
-  blue: '#33ADFF',
+  red: 'red',
 });
 
 // https://help.id.me/hc/en-us/articles/202087474-What-documentation-do-I-need-to-verify-my-first-responder-status
@@ -62,7 +62,7 @@ export default class SignUp extends React.Component {
     return (
 
       <View flex paddingH-25 paddingT-20>
-        <Text blue50 text20>Sign Up</Text>
+        <Text red50 text20>Sign Up</Text>
         <View paddingT-25></View>
         <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
           <TextInput text50 dark10
@@ -125,7 +125,7 @@ export default class SignUp extends React.Component {
           rightText={"Are you a police officer, firefigher, EMT, or first responder?"}
         />
       <View marginT-10 center>
-          <Button text70 white background-blue label="Login" onPress={this.onLogin}/>
+          <Button text70 white background-red label="Login" onPress={this.onLogin}/>
         </View>
       </View>
 

@@ -13,6 +13,7 @@ import MoreScreen from "./MoreView";
 import AddStack from "./AddView";
 
 
+
 // TODO: implement app instructions for user
 // https://github.com/okgrow/react-native-copilot
 
@@ -53,7 +54,7 @@ const LoggedInNavigator = createMaterialBottomTabNavigator(
         }
         return <Ionicons name={iconName} size={25} color={"#ffff"} />;
       },
-      barStyle: { backgroundColor: "#33ADFF" },
+      barStyle: { backgroundColor: "red" },
       animationEnabled: true,
       initialRouteName: "MapList",
       activeTintColor: "white",

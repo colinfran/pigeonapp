@@ -56,7 +56,7 @@ export default class AddEmergencyInfo extends React.Component {
   static navigationOptions = {
     title: "Add More Info",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

@@ -16,7 +16,7 @@ export default class DisplayName extends React.Component {
   static navigationOptions = {
     title: "DisplayName",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

@@ -5,7 +5,8 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Button
+  Button,
+  Platform
 } from "react-native";
 import { MapView } from "expo";
 import Modal from "react-native-modal";
@@ -13,6 +14,11 @@ import InfoModal from "./InfoModal";
 import Icon from "@expo/vector-icons";
 import { Constants, Location, Permissions } from 'expo';
 import * as firebase from 'firebase';
+import renderIf from "../assets/renderIf";
+import getPostsInUserLocation from "../assets/geofence";
+import SplashScreen from "./SplashScreen";
+
+import Geofence from 'react-native-expo-geofence';
 
 
 // https://github.com/react-community/react-native-maps
@@ -33,6 +39,7 @@ export default class MapScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loaded:false,
       markers: this.props.data,
       isModalVisible: false,
       region: this.props.defaultRegion,
@@ -67,9 +74,15 @@ export default class MapScreen extends React.Component {
     }
 
     let location = await Location.getCurrentPositionAsync({});
+
     // console.log(JSON.stringify(location));
     this.setState({ region:{ latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.1,
     longitudeDelta: 0.1} });
+
+    // var newMarker = Geofence.filterByProximity(location.coords, this.state.markers, 10000);
+    // this.setState({marker:newMarker});
+
+
   };
 
 
@@ -89,6 +102,9 @@ export default class MapScreen extends React.Component {
     //   });
     //
     // // });
+    setTimeout(function() { //Start the timer
+      this.setState({loaded: true});
+    }.bind(this), 2000)
 
   }
 
@@ -147,6 +163,11 @@ export default class MapScreen extends React.Component {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
+  onMapReady = (e) => {
+  if(!this.state.loaded) {
+    this.setState({loaded: true});
+    }
+  };
 
 
 
@@ -159,6 +180,10 @@ export default class MapScreen extends React.Component {
     }
     return (
       <View style={{ flex: 1 }}>
+        {renderIf(!this.state.loaded,
+          <SplashScreen/>
+        )}
+      {renderIf(this.state.loaded,
         <MapView
           style={{ flex: 1 }}
           region={{
@@ -170,6 +195,7 @@ export default class MapScreen extends React.Component {
           initialRegion={this.state.userlocation}
           userLocationAnnotationTitle={""}
           showsUserLocation={true}
+          onMapReady={this.onMapReady}
         >
           {this.state.markers.map(marker => (
 
@@ -192,12 +218,13 @@ export default class MapScreen extends React.Component {
                   <Text style={{ fontSize: 12, textAlign:'center' }}>{marker.town}, {marker.county}</Text>
                 </View>
                 <View style={styles.opencloseContainer}>
-                  <Button title="View" />
+                  <Button color={Platform.OS === 'ios' ? '' : 'red'} title="View" />
                 </View>
               </MapView.Callout>
             </MapView.Marker>
           ))}
         </MapView>
+      )}
         <Modal
           isVisible={this.state.isModalVisible}
           onBackdropPress={() =>
@@ -223,5 +250,6 @@ const styles = StyleSheet.create({
     borderTopWidth:0,
     marginLeft:-15,
     marginRight:-15
-  }
+  },
+
 });

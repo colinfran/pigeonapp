@@ -37,7 +37,7 @@ export default class AddEmergencySubmit extends React.Component {
   static navigationOptions = {
     title: "Submit",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

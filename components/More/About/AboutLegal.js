@@ -16,7 +16,7 @@ export default class AboutLegal extends React.Component {
   static navigationOptions = {
     title: "Legal",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

@@ -17,7 +17,7 @@ export default class MoreHelpfulInfo2 extends React.Component {
     title: "Flood informatoin",
 
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

@@ -47,7 +47,7 @@ export default class MoreScreen extends React.Component {
   static navigationOptions = {
     title: 'More',
     headerStyle: {
-      backgroundColor: '#33ADFF',
+      backgroundColor: 'red',
     },
     headerTintColor: '#fff',
 
@@ -102,7 +102,6 @@ export default class MoreScreen extends React.Component {
         else{
           this.setState({verifiedAccount: true});
           console.log("EmailVerified: true");
-
         }
 
 
@@ -197,6 +196,9 @@ export default class MoreScreen extends React.Component {
             />
        );
      }
+     else{
+       return;
+     }
    }
 
   render() {
@@ -208,7 +210,7 @@ export default class MoreScreen extends React.Component {
           hintInput ={this.state.displayName}
           submitInput={ (inputText) => {changeName(inputText, this.state.userId);this.showDialog(false); this.setState({displayName: inputText})} }
           closeDialog={ () => {this.showDialog(false)}}
-          modalStyle={{backgroundColor:'#33ADFF'}}>
+          modalStyle={{backgroundColor:'red'}}>
         </DialogInput>
 
         <View style={{flex:1, marginTop:25}}>

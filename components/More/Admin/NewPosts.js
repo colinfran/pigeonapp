@@ -21,7 +21,7 @@ export default class NewPosts extends React.Component {
   static navigationOptions = {
     title: "New Posts",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

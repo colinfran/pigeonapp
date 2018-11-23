@@ -9,7 +9,7 @@ import { signUserIn } from '../api/auth'
 import { Permissions, Notifications } from 'expo';
 
 Colors.loadColors({
-  blue: '#33ADFF',
+  red: 'red',
 });
 
 
@@ -64,10 +64,11 @@ export default class SignupLogin extends React.Component {
     if (this.state.email == "" || this.state.password == "")
       return;
     console.log("Here");
-    var loggedIn = signUserIn(this.state.email, this.state.password);
+    // var loggedIn = signUserIn(this.state.email, this.state.password);
     console.log("email: " + this.state.email);
     console.log("email: " + this.state.password);
-    if (loggedIn)
+
+    if (signUserIn(this.state.email, this.state.password))
       return this.props.navigation.navigate('Emergencies');
   }
 
@@ -79,10 +80,10 @@ export default class SignupLogin extends React.Component {
     const { navigate } = this.props.navigation;
     return (
 
-      <View flex blue paddingH-25 paddingT-40>
-      <Text blue text10>Welcome</Text>
+      <View flex red paddingH-25 paddingT-40>
+      <Text red text10>Welcome</Text>
 
-        <Text blue text50>Sign In</Text>
+        <Text red text50>Sign In</Text>
         <View style={[{padding: 16}]}></View>
 
         <TextInput text50
@@ -103,8 +104,8 @@ export default class SignupLogin extends React.Component {
           onSubmitEditing={this.onLogin}
           />
         <View marginT-100 center>
-          <Button text70 white background-blue label="Login" onPress={this.onLogin}/>
-          <Button link text70 blue label="Sign Up" marginT-20 onPress={this.onSignup}/>
+          <Button text70 white background-red label="Login" onPress={this.onLogin}/>
+          <Button link text70 red label="Sign Up" marginT-20 onPress={this.onSignup}/>
         </View>
       </View>
 

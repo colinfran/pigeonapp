@@ -16,7 +16,7 @@ export default class AboutCreators extends React.Component {
   static navigationOptions = {
     title: "About The Creators",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

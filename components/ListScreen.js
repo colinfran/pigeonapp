@@ -6,6 +6,7 @@ import Modal from "react-native-modal";
 import InfoModal from "./InfoModal";
 import * as firebase from 'firebase';
 
+import Geofence from 'react-native-expo-geofence';
 
 
 //https://github.com/Flipkart/recyclerlistview#guides
@@ -57,6 +58,7 @@ export default class ListScreen extends React.Component {
         if ((typeof dataOb === 'object'))
           items.push( dataOb );
     }
+
 
      this.setState({
        dataSource: this.ds.cloneWithRows(items)

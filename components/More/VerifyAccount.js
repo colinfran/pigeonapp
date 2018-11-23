@@ -25,7 +25,7 @@ export default class VerifyAccount extends React.Component {
   static navigationOptions = {
     title: 'Verify Account',
     headerStyle: {
-      backgroundColor: '#33ADFF',
+      backgroundColor: 'red',
     },
     headerTintColor: '#fff',
 

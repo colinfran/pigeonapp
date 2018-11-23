@@ -21,6 +21,7 @@
     "react-native-dialog-input": "^1.0.5",
     "react-native-dialogs": "^1.0.2",
     "react-native-elements": "^0.19.1",
+    "react-native-expo-geofence": "^0.1.6",
     "react-native-floating-action": "^1.13.0",
     "react-native-geocoding": "^0.3.0",
     "react-native-grid-component": "^1.1.0",

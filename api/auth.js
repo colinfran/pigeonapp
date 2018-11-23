@@ -67,14 +67,10 @@ export function signUserIn(providedEmail, providedPassword){
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      if (errorCode === 'auth/wrong-password') {
-        alert('Wrong password.');
-        return false;
-      } else {
-        alert(errorMessage);
-        console.log(error);
-        return false;
-      }
+      alert(errorMessage);
+      console.log(error);
+      return false;
+
     });
 
     var userId = firebase.auth().currentUser.uid;

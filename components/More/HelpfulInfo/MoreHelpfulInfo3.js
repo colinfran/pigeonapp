@@ -16,7 +16,7 @@ export default class MoreHelpfulInfo3 extends React.Component {
   static navigationOptions = {
     title: "Helpful Landslide Info",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

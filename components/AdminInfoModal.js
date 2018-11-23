@@ -298,16 +298,16 @@ export default class AdminInfoModal extends React.Component {
         <View style={{ flex: 1 }}>
           <View style={{ padding: 20 }}>
             <View style={{borderBottomWidth: 0.8, borderColor: "lightgrey", width:'100%', justifyContent: 'center',paddingTop: 10,paddingBottom: 5}}>
-              <Text style={{fontSize:'18'}}>{this.state.title}</Text>
+              <Text style={{fontSize:18}}>{this.state.title}</Text>
             </View>
-            <Text style={{fontSize:'16',paddingTop: 5,paddingBottom: 3}}>{this.state.description}</Text>
+            <Text style={{fontSize:16,paddingTop: 5,paddingBottom: 3}}>{this.state.description}</Text>
             <Text>
               {this.state.town}, {this.state.county}, USA
             </Text>
-            <Text style={{fontSize:'13',paddingTop: 3}}>Lat: {this.state.coordinates.latitude}</Text>
-            <Text style={{fontSize:'13'}}>Long: {this.state.coordinates.longitude}</Text>
+            <Text style={{fontSize:13,paddingTop: 3}}>Lat: {this.state.coordinates.latitude}</Text>
+            <Text style={{fontSize:13}}>Long: {this.state.coordinates.longitude}</Text>
 
-            <Text style={{fontSize:'12',paddingTop: 5}}>
+            <Text style={{fontSize:12,paddingTop: 5}}>
               <Text>Posted on{" "}{this.state.date}{" at "}{this.state.time}</Text>
             </Text>
 
@@ -427,7 +427,7 @@ export default class AdminInfoModal extends React.Component {
           )}
         </View>
         <View style={{borderWidth:.5, borderColor:'lightgrey'}}>
-          <Button onPress={()=> this.onModalClose()} title="Close" />
+          <Button color={Platform.OS === 'ios' ? '' : 'red'} onPress={()=> this.onModalClose()} title="Close" />
         </View>
       </View>
     );

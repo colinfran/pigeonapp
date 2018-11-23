@@ -103,7 +103,7 @@ export default class AddEmergencyMap extends React.Component {
   static navigationOptions = {
     title: "Add Location Info",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };
@@ -186,6 +186,7 @@ export default class AddEmergencyMap extends React.Component {
                 scrollEnabled={false}
                 zoomEnabled={false}
                 onPress={(e) => this.setState({ pressCoordinates: e.nativeEvent.coordinate})}
+                onLongPress={(e) => this.setState({ pressCoordinates: e.nativeEvent.coordinate})}
                 >
 
                 <MapView.Marker coordinate={this.state.pressCoordinates} />

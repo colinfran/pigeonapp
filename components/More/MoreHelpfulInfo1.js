@@ -16,7 +16,7 @@ export default class MoreHelpfulInfo1 extends React.Component {
   static navigationOptions = {
     title: "Fire Infomation",
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };

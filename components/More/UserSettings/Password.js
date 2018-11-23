@@ -24,7 +24,7 @@ export default class Password extends React.Component {
   static navigationOptions = {
     title: 'Change Password',
     headerStyle: {
-      backgroundColor: '#33ADFF',
+      backgroundColor: 'red',
     },
     headerTintColor: '#fff',
 

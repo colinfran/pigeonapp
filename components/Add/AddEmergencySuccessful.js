@@ -19,7 +19,7 @@ export default class AddEmergencySuccessful extends React.Component {
     gesturesEnabled: false,
 
     headerStyle: {
-      backgroundColor: "#33ADFF"
+      backgroundColor: "red"
     },
     headerTintColor: "#fff"
   };
