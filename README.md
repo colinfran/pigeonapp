@@ -12,7 +12,10 @@ __Directions__
 
 ______________________________________________________
 
-![Loading Screen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/loading.png)
+<p align="center">
+  <img alt="Loading Screen" src="https://github.com/colinfran/pigeonapp/blob/master/assets/demo/loading.png"/>
+</p>
+
 
 ![Log In Screen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/1.png)
 
