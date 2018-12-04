@@ -12,7 +12,7 @@ __Directions__
 
 ______________________________________________________
 
-![Loading Screen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/loading.png)
+![Loading Screen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/loading.png)<!-- .element height="50%" width="50%" -->
 ![MapView/ListView Screeen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/1.gif)
 ![Post Emergency Screeen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/2.gif)
 ![More/Settubgs Screeen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/3.gif)
