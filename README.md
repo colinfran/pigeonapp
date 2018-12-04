@@ -9,3 +9,10 @@ __Directions__
 5) download Expo Client on iPhone/Android
 6) `expo start`
 7) scan QR code on phone and open in Expo client app
+
+______________________________________________________
+
+![Loading Screen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/loading.png)
+![MapView/ListView Screeen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/1.gif)
+![Post Emergency Screeen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/2.gif)
+![More/Settubgs Screeen](https://github.com/colinfran/pigeonapp/blob/master/assets/demo/3.gif)
