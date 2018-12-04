@@ -14,7 +14,7 @@ const firebaseConfig = {
 let app = firebase.initializeApp(firebaseConfig);
 
 
-export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, authVar, adminVar, tokenVar) {
+export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, authVar, adminVar, tokenVar, firstresponderlicense) {
     firebase.auth().createUserWithEmailAndPassword(emailVar, passwordVar)
     .then(data => {
       // console.log("User ID :- ", data.user.uid);
@@ -29,6 +29,7 @@ export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, aut
         'admin': adminVar,
         'numPosts': 0,
         'token':tokenVar,
+        'firstresponderlicense': firstresponderlicense,
       });
       firebase.auth().currentUser.sendEmailVerification().then(function() {
        // Email sent.
@@ -58,61 +59,36 @@ export function createUser(emailVar, passwordVar, firstNameVar, lastNameVar, aut
 
 }
 
-export function signUserIn(providedEmail, providedPassword){
+export function signUserIn(providedEmail, providedPassword, that){
   var errorCode = "";
   var errorMessage = "";
+
   firebase.auth().signInWithEmailAndPassword(providedEmail, providedPassword)
-
-  .catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      alert(errorMessage);
-      console.log(error);
-      return false;
-
-    });
-
+  .then(function (response) {
+    // console.log("response:" + JSON.stringify(response));
     var userId = firebase.auth().currentUser.uid;
-
-
-    // console.log(userId)
-    //
-    //   var name;
-    //   var nameRef = firebase.database().ref('/users/' + userId).;
-    //   nameRef.on('value', function(snapshot) {
-    //     // console.log(snapshot.val());
-    //     name = snapshot.val();
-    //     name = name.lastname;
-    //   });
-    //   console.log(name)
-    //
     firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) {
       var name = (snapshot.val() && snapshot.val().firstname);
       var email = providedEmail;
       var admin = (snapshot.val() && snapshot.val().admin);
-      console.log("name: "+name)
+      // console.log("name: "+name)
       AsyncStorage.setItem('name', name);
       AsyncStorage.setItem('email', email);
-
       AsyncStorage.setItem('userID', userId);
       AsyncStorage.setItem('admin', ""+admin);
-
+      that.setState({loading:false});
+      that.props.navigation.navigate('Emergencies');
     });
-    //   AsyncStorage.setItem('name', name);
-    //   AsyncStorage.setItem('email', email);
-    //   AsyncStorage.setItem('userID', userID);
-    //   console.log('firebaseUserID: '+ userID);
-    //   console.log('email: '+ email);
-    //   console.log('name: '+ name);
-    // });
-    // var name = firebase.auth().currentUser.uid.firstname;
-
-
-
-
-
-    return true;
+  })
+  .catch(function(error) {
+      // Handle Errors here.
+      that.setState({loading:false});
+      errorCode = error.code;
+      errorMessage = error.message;
+      alert(errorMessage);
+      console.log(error);
+    });
+    return;
 
 }
 
@@ -301,7 +277,7 @@ export function getMyPosts(userId){
 }
 
 export function removePosts(postId){
-    firebase.database().ref('/posts/' + postId).remove();
+    // firebase.database().ref('/posts/' + postId).remove();
 }
 
 export function verifyPosts(postId, verifierId){

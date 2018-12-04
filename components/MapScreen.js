@@ -17,6 +17,7 @@ import * as firebase from 'firebase';
 import renderIf from "../assets/renderIf";
 import getPostsInUserLocation from "../assets/geofence";
 import SplashScreen from "./SplashScreen";
+import { Ionicons } from '@expo/vector-icons';
 
 import Geofence from 'react-native-expo-geofence';
 
@@ -33,12 +34,13 @@ const markerImages = {
 var selectedData = [];
 
 // data is located in /Views/LoggedIn/MapListView/index.js
-
+var location;
 
 export default class MapScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      forceRefresh: false,
       loaded:false,
       markers: this.props.data,
       isModalVisible: false,
@@ -61,7 +63,10 @@ export default class MapScreen extends React.Component {
 
     };
     this.itemsRef = firebase.database().ref('/posts');
-    this._renderCircles = this._renderCircles.bind(this);
+    this.renderBtn = this.renderBtn.bind(this);
+
+    this.forceRefreshFunc = this.forceRefreshFunc.bind(this);
+
 
   }
 
@@ -73,7 +78,7 @@ export default class MapScreen extends React.Component {
       });
     }
 
-    let location = await Location.getCurrentPositionAsync({});
+    location = await Location.getCurrentPositionAsync({});
 
     // console.log(JSON.stringify(location));
     this.setState({ region:{ latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.1,
@@ -102,9 +107,35 @@ export default class MapScreen extends React.Component {
     //   });
     //
     // // });
-    setTimeout(function() { //Start the timer
-      this.setState({loaded: true});
-    }.bind(this), 2000)
+
+    var that = this;
+    var dataObjectParent = [];
+    var postsRef = firebase.database().ref('/posts');
+    postsRef.on('value', function(snapshot) {
+      var val = (snapshot.val());
+      var i = 0;
+      // snapshot.val() is the dictionary with all your keys/values from the '/store' path
+      for(var key in snapshot.val()){
+        // var item = childSnapshot.val();
+        // item.key = childSnapshot.key;
+
+          var dataOb = snapshot.val()[key];
+          dataObjectParent.push( dataOb);
+          console.log(JSON.stringify(dataOb));
+          // console.log(JSON.stringify(dataOb));
+
+      }
+      // console.log(JSON.stringify(dataObjectParent));
+      that.setState(
+        {
+            markers: dataObjectParent
+        },
+        function() {
+          // console.log(this.state.markers);
+          // this.addGeocoding(this.state.markers);
+        }
+       )
+    })
 
   }
 
@@ -116,13 +147,51 @@ export default class MapScreen extends React.Component {
     } else {
       this._getLocationAsync();
     }
+
+    var that = this;
+    var dataObjectParent = [];
+    var postsRef = firebase.database().ref('/posts');
+    postsRef.on('value', function(snapshot) {
+      var val = (snapshot.val());
+      var i = 0;
+      // snapshot.val() is the dictionary with all your keys/values from the '/store' path
+      for(var key in snapshot.val()){
+        // var item = childSnapshot.val();
+        // item.key = childSnapshot.key;
+
+          var dataOb = snapshot.val()[key];
+          dataObjectParent.push( dataOb);
+          // console.log(JSON.stringify(dataOb));
+
+      }
+      // console.log(JSON.stringify(dataObjectParent));
+      that.setState(
+        {
+            markers: dataObjectParent
+        },
+        function() {
+          // console.log(this.state.markers);
+          // this.addGeocoding(this.state.markers);
+        }
+       )
+    })
+    setTimeout(function() { //Start the timer
+      this.setState({loaded: true});
+    }.bind(this), 2000)
   }
 
 
+
   _toggleModal = () => {
+    if (this.state.isModalVisible){
+
+      this.setState({selectedMarker: null});
+    }
+      // this.forceRefreshFunc();
     this.setState({
       isModalVisible: !this.state.isModalVisible,
     });
+
   };
 
   _selectedInfo = (marker) => {
@@ -133,30 +202,6 @@ export default class MapScreen extends React.Component {
       "User has selected new marker: --> " + JSON.stringify(this.state.selectedMarker)
     );
   };
-
-  _drawCircle(){
-    return(
-      <MapView.Circle
-      center={data.coordinates}
-      radius={20}
-      strokeWidth={2}
-      strokeColor="#3399ff"
-      fillColor="#80bfff"
-    />
-    );
-  }
-
-  _renderCircles(data){
-      return(
-        <MapView.Circle
-        center={data.coordinates}
-        radius={20}
-        strokeWidth={2}
-        strokeColor="#3399ff"
-        fillColor="#80bfff"
-      />
-      );
-  }
 
 
   capitalize(str) {
@@ -170,7 +215,56 @@ export default class MapScreen extends React.Component {
   };
 
 
+  forceRefreshFunc (){
+    console.log("Force refresh")
+    var that = this;
+    var dataObjectParent = [];
+    var postsRef = firebase.database().ref('/posts');
+    postsRef.on('value', function(snapshot) {
+      var val = (snapshot.val() && snapshot.val());
+      var i = 0;
+      // snapshot.val() is the dictionary with all your keys/values from the '/store' path
+      for(var key in snapshot.val()){
+        // var item = childSnapshot.val();
+        // item.key = childSnapshot.key;
 
+          var dataOb = snapshot.val()[key];
+          dataObjectParent.push( dataOb);
+          // console.log(JSON.stringify(dataOb));
+
+      }
+      // console.log(JSON.stringify(dataObjectParent));
+      that.setState(
+        {
+            markers: dataObjectParent
+        },
+        function() {
+          // console.log(this.state.markers);
+          // this.addGeocoding(this.state.markers);
+        }
+       )
+    })
+    this.setState({
+      forceRefresh: !this.state.forceRefresh,
+    });
+  }
+
+
+  renderBtn(){
+
+    return (
+      <TouchableOpacity style={{}}
+        onPress={() => this.setState({ region:{ latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: 0.1,
+            longitudeDelta: 0.1} })}
+        >
+        <Image
+          style={{position: 'absolute', right: 10, top: 10}}
+          resizeMethod="resize"
+          source={require("../assets/locate.png")}
+          />
+      </TouchableOpacity>
+    );
+  }
   render() {
     let text = 'Waiting..';
     if (this.state.errorMessage) {
@@ -184,7 +278,9 @@ export default class MapScreen extends React.Component {
           <SplashScreen/>
         )}
       {renderIf(this.state.loaded,
+        <View style={{ flex: 1 }}>
         <MapView
+          key={this.state.forceRefresh}
           style={{ flex: 1 }}
           region={{
             latitude: this.state.region.latitude,
@@ -194,9 +290,11 @@ export default class MapScreen extends React.Component {
           }}
           initialRegion={this.state.userlocation}
           userLocationAnnotationTitle={""}
+          showsMyLocationButton={true}
           showsUserLocation={true}
           onMapReady={this.onMapReady}
         >
+
           {this.state.markers.map(marker => (
 
 
@@ -204,26 +302,20 @@ export default class MapScreen extends React.Component {
             <MapView.Marker
               key={marker.key}
               coordinate={marker.postRegion}
-              onCalloutPress={() => {this._selectedInfo(marker);this._toggleModal()}}
-              onPress={() => {
+              onPress={() => {this._selectedInfo(marker);
                 this.setState({selectedMarker: marker, region: marker.postRegion});
+                this._toggleModal()
               }}
               image={markerImages[marker.type]}
             >
 
-              <MapView.Callout style={{ width: 175}}>
-                <View style={{borderBottomWidth: 0.8,borderColor: "lightgrey",padding:10, marginLeft:-15, marginRight:-15}}>
-                  <Text style={{ fontSize: 16, textAlign:'center'}}>{marker.title}</Text>
-                  <Text style={{ fontSize: 14, textAlign:'center'}}>~{this.capitalize(marker.type)}~</Text>
-                  <Text style={{ fontSize: 12, textAlign:'center' }}>{marker.town}, {marker.county}</Text>
-                </View>
-                <View style={styles.opencloseContainer}>
-                  <Button color={Platform.OS === 'ios' ? '' : 'red'} title="View" />
-                </View>
-              </MapView.Callout>
             </MapView.Marker>
           ))}
+
         </MapView>
+
+        </View>
+
       )}
         <Modal
           isVisible={this.state.isModalVisible}

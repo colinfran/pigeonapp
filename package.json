@@ -11,6 +11,7 @@
   "dependencies": {
     "@around25/jwt-utils": "^1.0.1",
     "expo": "^29.0.0",
+    "fencery": "^1.0.3",
     "firebase": "^5.5.8",
     "jwt-utils": "^1.0.5",
     "react": "16.3.1",

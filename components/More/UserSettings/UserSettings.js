@@ -27,7 +27,7 @@ export default class UserSettings extends React.Component {
   }
 
   static navigationOptions = {
-    title: 'User Settings',
+    title: 'Settings',
     headerStyle: {
       backgroundColor: 'red',
     },

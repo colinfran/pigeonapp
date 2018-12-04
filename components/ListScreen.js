@@ -46,6 +46,8 @@ export default class ListScreen extends React.Component {
 
     this.itemsRef = firebase.database().ref('/posts');
     this.renderItem = this.renderItem.bind(this)
+    this.forceRefreshFunc = this.forceRefreshFunc.bind(this)
+
   }
 
   setItemsFromFirebase(itemsRef) {
@@ -66,6 +68,10 @@ export default class ListScreen extends React.Component {
 
    });
  }
+
+forceRefreshFunc(){
+  return;
+}
 
  componentDidMount() {
    this.setItemsFromFirebase(this.itemsRef);
@@ -127,6 +133,8 @@ export default class ListScreen extends React.Component {
           <InfoModal
             toggle={this._toggleModal}
             dataClick={this.state.selectedMarker}
+            func={this.forceRefreshFunc}
+
           />
         </Modal>
         <ListView
@@ -142,7 +150,8 @@ export default class ListScreen extends React.Component {
     this.setState({
       isModalVisible: !this.state.isModalVisible,
     });
-    console.log("Toggle: " + this.state.isModalVisible);
+
+    // console.log("Toggle: " + this.state.isModalVisible);
   };
 
   _selectedInfo = (data) => {

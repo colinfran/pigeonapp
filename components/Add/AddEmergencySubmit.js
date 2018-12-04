@@ -81,29 +81,34 @@ export default class AddEmergencySubmit extends React.Component {
   render() {
     return (
         <View style={{flex:1, flexDirection:'column'}}>
-          <View style={{flex:0, textAlign:'center', alignItems:'center', padding:20, paddingTop: 50}}>
-            <Text>
+          <View style={{flex:0, padding:20, paddingTop: 15, flexDirection:'column'}}>
               <Text>
-                Pigeon built the Disaster Broadcaster app as a Free app. This SERVICE is provided by Pigeon
+                Pigeon built this mobile app as to be a free. This SERVICE is provided by Pigeon
                 at no cost and is intended for use as is. You must agree to not spam, falsly post, or decieve
                 any users in this app. We reserve the right to remove your post at our descretion.
-                [***this is just an example user agreement, will be updated***][stuff about location data too]
-                You agree that by posting to this app, you have{" "}
+                Posts must be truthful and must not contain false information.
               </Text>
-              <Text style={{textDecorationLine:'underline'}}>
-                 read, understood, and agree{" "}
+              <Text style={{paddingTop:8, paddingBottom: 8}}>
+                (To see more information about our legal policy, please go to the "More Screen", scroll down, and select "Legal".)
               </Text>
-              <Text>
-                to be bound by all of these Terms and Conditions Use. IF YOU DO NOT AGREE WITH ALL
-                OF THESE TERMS and CONDITIONS, THEN YOU ARE{" "}
+              <Text style={{flexDirection:'row', }}>
+                <Text>
+                  You agree that by posting to this app, you have{" "}
+                </Text>
+                <Text style={{textDecorationLine:'underline'}}>
+                   read, understood, and agree
+                </Text>
+                <Text>
+                  {" "}to be bound by all of the Terms and Conditions. IF YOU DO NOT AGREE WITH ALL
+                  OF THESE TERMS and CONDITIONS, THEN YOU ARE{" "}
+                </Text>
+                <Text style={{textDecorationLine:'underline'}}>
+                   EXPRESSLY PROHIBITED
+                </Text>
+                <Text>
+                  {" "}FROM POSTING ON THIS APP.
+                </Text>
               </Text>
-              <Text style={{textDecorationLine:'underline'}}>
-                 EXPRESSLY PROHIBITED{" "}
-              </Text>
-              <Text>
-                FROM POSTING ON THIS APP.
-              </Text>
-            </Text>
           </View>
           <View style={{paddingLeft: 15}}>
             <CheckBox

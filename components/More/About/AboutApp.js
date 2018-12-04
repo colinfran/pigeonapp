@@ -30,10 +30,23 @@ export default class AboutApp extends React.Component {
             flex: 0,
             textAlign: "center",
             alignItems: "center",
-            paddingTop: 10
+            paddingTop: 30,
+            padding: 50,
           }}
         >
-        <Text>About this app</Text>
+          <Image
+            resizeMethod="resize"
+            source={require("../../../assets/pigeon.png")}
+            />
+          <Text>Pigeon is a crowdsourcing application for emergency notification. We took inspiration
+              from the Coffee Park incident during the Tubbs fire of October 2017. People were unaware
+              of impending danger until they were well within harm{"'"}s way.
+          </Text>
+          <Text>To solve this we wanted to create a modern way to let neighbors look out for neighbors,
+              thus Pigeon was born. Think of this app as the software equivalent of a fire extinguisher, we'll
+              be here when you need us.
+          </Text>
+
         </View>
       </View>
     );

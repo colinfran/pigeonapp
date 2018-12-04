@@ -147,7 +147,7 @@ export default class MoreScreen extends React.Component {
       return;
      else{
        return([
-         <SettingsList.Header headerText='Admin Stuff' headerStyle={{marginTop:25}}/>
+         <SettingsList.Header headerText='Admin Privileges' headerStyle={{marginTop:25}}/>
 
          ,
 

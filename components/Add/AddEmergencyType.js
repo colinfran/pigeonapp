@@ -7,10 +7,10 @@ import { Constants, Location, Permissions } from 'expo';
 
 
 var data=[
-  {title:"Fire",description:"Description of types of fires or something.",type: "fire", icon:require("../../assets/fire/72.png"), colors: "red"},
-  {title:"Flood",description:"Description of flood or something.",type: "flood", icon:require("../../assets/flood/72.png"), colors: "green"},
-  {title:"Landslide",description:"Description of landslide or something.",type: "landslide", icon: require("../../assets/landslide/72.png"), colors: "yellow"},
-  {title:"Other",description:"Any emergency that is not a selectable option.",type: "other", icon: require("../../assets/alert/72.png"), colors: "lightgreen"}
+  {title:"Fire",description:"Small fire, house fire, forest fire, etc.",type: "fire", icon:require("../../assets/fire/72.png"), colors: "lightsalmon"},
+  {title:"Flood",description:"Flash floods, intense rainfall, flooded areas, etc.",type: "flood", icon:require("../../assets/flood/72.png"), colors: "salmon"},
+  {title:"Landslide",description:"Landslide, mudslide, avalanche, rockslide, etc.",type: "landslide", icon: require("../../assets/landslide/72.png"), colors: "salmon"},
+  {title:"Other",description:"Any emergency that is not a selectable option.",type: "other", icon: require("../../assets/alert/72.png"), colors: "lightsalmon"}
 ]
 
 export default class AddEmergencyType extends React.Component {
@@ -27,7 +27,7 @@ export default class AddEmergencyType extends React.Component {
     headerStyle: {
       backgroundColor: 'red',
     },
-    headerTintColor: '#fff',
+    headerTintColor: 'red',
 
   };
 
@@ -39,12 +39,13 @@ export default class AddEmergencyType extends React.Component {
 
   _renderItem = (data, i) => (
     <TouchableOpacity style={[{ backgroundColor: data.colors, borderRadius:10 }, styles.item]} key={i} onPress={() => this.setSelected(data.type)} dataTest={data.type}>
-      <View style={{flex: 0, flexDirection: 'column',alignContent:'center', postion:'absolute',left:10, top:10, width: 100,height: 100}}>
-        <View style={{flex: 0, flexDirection: 'row'}}>
+      <View style={{flex: 0, flexDirection: 'column',alignContent:'center', alignSelf:'center'}}>
+        <View style={{flex: 0, flexDirection: 'column', paddingTop: 10}}>
           <Image
+            style={{alignSelf:'center'}}
             source={data.icon}
             />
-          <View style={{flex: 0, flexDirection: 'column', width:80}}>
+          <View style={{padding:10, flex: 0, flexDirection: 'column'}}>
               <Text style={{alignContent: 'center',fontWeight: 'bold'}}>{data.title}</Text>
               <Text style={{fontSize: 12, alignContent: 'center',}}>{data.description}</Text>
             </View>
@@ -66,7 +67,7 @@ export default class AddEmergencyType extends React.Component {
               itemsPerRow={2}>
             </Grid>
             </View>
-            <View style={{padding: 20, paddingBottom:175}}>
+            <View style={{padding: 20, paddingBottom:130}}>
               <Text style={{textAlign:'center'}}>Please choose one of the above buttons that represents the emergency you are posting about.</Text>
             </View>
 
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 1,
-    height: 125,
+    height: 150,
     margin: 10
   },
   list: {

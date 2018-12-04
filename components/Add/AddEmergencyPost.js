@@ -38,10 +38,13 @@ export default class AddEmergencyPost extends Component {
                 <Text style={{textDecorationLine:'underline'}}>
                   please call 911 first
                 </Text>
-                {" "}and alert the proper authorites.
+                {" "}and alert the proper authorities.
+              </Text>
+              <Text style={{paddingBottom: 10}}>
+              Please do not use this as your primary way of alerting people. This app uses data posted by other people and is intended to be a secondary way of notifying people of emergencies.
               </Text>
               <Text>
-              Please do not use this as your primary way of alerting people. This app uses data posted by other people and is intended to be a secondary way of notifying people of emergencies.
+              This app is supposed to be used as a backup notification tool that hopes to bridge the communication gap when emergencies occur. Please post to this app responsibly.
               </Text>
             </View>
           </View>

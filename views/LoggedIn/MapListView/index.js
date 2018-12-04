@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons'; //https://ionicons.com/
 
 import MapScreen from '../../../components/MapScreen';
 import ListScreen from '../../../components/ListScreen';
+import SplashScreen from '../../../components/SplashScreen';
 import Geocoder from 'react-native-geocoding';
 import * as firebase from 'firebase';
 
@@ -238,9 +239,7 @@ export default class MapList extends React.Component {
 		}
 		else {
 			return (
-				<View style={{flex:1, justifyContent: 'center',alignItems: 'center',}}>
-					<Image style={{}} source={require('../../../assets/preloader.gif')} />
-				</View>
+				<SplashScreen/>
 			)
 		}
 	}

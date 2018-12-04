@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, AsyncStorage, Alert } from 'react-native'
+import { StyleSheet, AsyncStorage, Alert, Keyboard, TouchableWithoutFeedback, ScrollView } from 'react-native'
 import {View, TextInput, Text, Button} from 'react-native-ui-lib';
 import {Typography, Colors} from 'react-native-ui-lib';
 // import { login } from '../api/auth';
@@ -26,11 +26,22 @@ export default class SignUp extends React.Component {
       password: "",
       passwordCheck: "",
       driverslicense: "",
+      firstresponderlicense: "",
       admin: false,
       token: this.props.navigation.state.params.token,
 
     };
+    this.renderAdminSection = this.renderAdminSection.bind(this);
   }
+
+  static navigationOptions = {
+    title: 'Sign Up',
+    headerStyle: {
+      backgroundColor: 'red',
+    },
+    headerTintColor: '#fff',
+
+  };
 
 
 
@@ -50,7 +61,7 @@ export default class SignUp extends React.Component {
     AsyncStorage.setItem('driverslicense', this.state.driverslicense);
     AsyncStorage.setItem('admin', this.state.admin+'');
 
-    var loggedIn = createUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, this.state.driverslicense, this.state.admin, this.state.token)
+    var loggedIn = createUser(this.state.email, this.state.password, this.state.firstname, this.state.lastname, this.state.driverslicense, this.state.admin, this.state.token, this.state.firstresponderlicense)
 
     if (loggedIn)
       this.props.navigation.navigate('Emergencies');
@@ -58,10 +69,33 @@ export default class SignUp extends React.Component {
     // createUser(this.state.email, this.state.password, this.state.name, this.state.name, this.state.driverslicense, this.state.admin);
   }
 
+  renderAdminSection(){
+    if (this.state.admin){
+      return (
+        <View style={{flexDirection: 'column'}}>
+          <Text style={{fontSize: 10, paddingBottom: 5}}>If you are a Paramedic, Mobile Intensive Care Nurse (MICN), Advanced EMT, EMT, Law Enforcement, Firefighter, emergency response agency, or any other first responder, please provide your state license.</Text>
+          <TextInput text50 dark10
+            returnKeyType={"done"}
+            placeholder="State License"
+            onChangeText={(value) => this.setState({firstresponderlicense: value})}
+            ref={(input) => { this.dlTextInput = input; }}
+            value={this.state.firstresponderlicense}
+            />
+        </View>
+      );
+    }
+    else{
+      return;
+    }
+  }
+
   render() {
     return (
-
-      <View flex paddingH-25 paddingT-20>
+        <ScrollView
+          style={{ flex: 1,backgroundColor:'white', flexDirection: "column" }}
+          onPress={() => Keyboard.dismiss()}
+        >
+      <View white flex paddingH-25 paddingT-20>
         <Text red50 text20>Sign Up</Text>
         <View paddingT-25></View>
         <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
@@ -108,9 +142,7 @@ export default class SignUp extends React.Component {
           onSubmitEditing={() => { this.dlTextInput.focus(); }}
           value={this.state.passwordCheck}/>
         <TextInput text50 dark10
-          returnKeyType={"done"}
           placeholder="Drivers License"
-          secureTextEntry
           onChangeText={(value) => this.setState({driverslicense: value})}
           ref={(input) => { this.dlTextInput = input; }}
           value={this.state.driverslicense}/>
@@ -124,11 +156,15 @@ export default class SignUp extends React.Component {
           isChecked={this.state.admin}
           rightText={"Are you a police officer, firefigher, EMT, or first responder?"}
         />
+      {this.renderAdminSection()}
       <View marginT-10 center>
           <Button text70 white background-red label="Login" onPress={this.onLogin}/>
         </View>
+        <View style={{height: 40}}></View>
       </View>
 
+
+  </ScrollView>
     );
   }
 

@@ -19,7 +19,7 @@ const list = []
 export default class NewPosts extends React.Component {
 
   static navigationOptions = {
-    title: "New Posts",
+    title: "Review New Posts",
     headerStyle: {
       backgroundColor: "red"
     },

@@ -3,8 +3,12 @@ import { StyleSheet } from 'react-native'
 import {View, TextInput, Text, Button} from 'react-native-ui-lib';
 import {Typography, Colors} from 'react-native-ui-lib';
 // import { login } from '../api/auth'
-import { AsyncStorage } from "react-native"
-import { signUserIn } from '../api/auth'
+import { AsyncStorage, ActivityIndicator, TouchableWithoutFeedback, Keyboard } from "react-native"
+import { signUserIn } from '../api/auth';
+import renderIf from "../assets/renderIf";
+
+import SplashScreen from './SplashScreen';
+
 
 import { Permissions, Notifications } from 'expo';
 
@@ -21,6 +25,7 @@ export default class SignupLogin extends React.Component {
     this.registerForPushNotificationsAsync = this.registerForPushNotificationsAsync.bind(this);
 
     this.state = {
+      loading: false,
       email:"",
       password: "",
       token: "",
@@ -28,6 +33,14 @@ export default class SignupLogin extends React.Component {
 
 
   }
+
+  static navigationOptions = {
+    headerStyle: {
+      backgroundColor: 'red',
+    },
+    headerTintColor: '#fff',
+
+  };
 
   componentDidMount(){
     this.registerForPushNotificationsAsync();
@@ -63,13 +76,17 @@ export default class SignupLogin extends React.Component {
   async onLogin() {
     if (this.state.email == "" || this.state.password == "")
       return;
-    console.log("Here");
+    this.setState({loading:true});
+    // console.log("Here");
     // var loggedIn = signUserIn(this.state.email, this.state.password);
     console.log("email: " + this.state.email);
     console.log("email: " + this.state.password);
 
-    if (signUserIn(this.state.email, this.state.password))
-      return this.props.navigation.navigate('Emergencies');
+    var userSignedIn = signUserIn(this.state.email, this.state.password, this);
+    // console.log('userSignedIn: '+userSignedIn);
+    // if (userSignedIn)
+    //   return this.props.navigation.navigate('Emergencies');
+
   }
 
   async onSignup() {
@@ -79,34 +96,50 @@ export default class SignupLogin extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
+      <View style={{flex:1, backgroundColor:'white'}}>
+        {renderIf(
+          this.state.loading,
+          <SplashScreen/>
+        )}
 
-      <View flex red paddingH-25 paddingT-40>
-      <Text red text10>Welcome</Text>
+        {renderIf(
+          !this.state.loading,
+          <TouchableWithoutFeedback
+            style={{ flex: 1, flexDirection: "column" }}
+            onPress={() => Keyboard.dismiss()}
+          >
+          <View flex red paddingH-25 paddingT-40>
 
-        <Text red text50>Sign In</Text>
-        <View style={[{padding: 16}]}></View>
+          <Text red text10>Welcome</Text>
 
-        <TextInput text50
-          placeholder="Email"
-           dark10
-           returnKeyType = {"next"}
-           onChangeText={(value) => this.setState({email: value})}
-           value={this.state.email}
-           onSubmitEditing={() => { this.passwordTextInput.focus(); }}
-           />
-        <TextInput text50
-          ref={(input) => { this.passwordTextInput = input; }}
-          placeholder="Password"
-          secureTextEntry dark10
-          returnKeyType={"go"}
-          onChangeText={(value) => this.setState({password: value})}
-          value={this.state.password}
-          onSubmitEditing={this.onLogin}
-          />
-        <View marginT-100 center>
-          <Button text70 white background-red label="Login" onPress={this.onLogin}/>
-          <Button link text70 red label="Sign Up" marginT-20 onPress={this.onSignup}/>
-        </View>
+            <Text red text50>Sign In</Text>
+            <View style={[{padding: 16}]}></View>
+
+            <TextInput text50
+              placeholder="Email"
+               dark10
+               returnKeyType = {"next"}
+               onChangeText={(value) => this.setState({email: value})}
+               value={this.state.email}
+               onSubmitEditing={() => { this.passwordTextInput.focus(); }}
+               />
+            <TextInput text50
+              ref={(input) => { this.passwordTextInput = input; }}
+              placeholder="Password"
+              secureTextEntry dark10
+              returnKeyType={"go"}
+              onChangeText={(value) => this.setState({password: value})}
+              value={this.state.password}
+              onSubmitEditing={this.onLogin}
+              />
+            <View marginT-100 center>
+              <Button text70 white background-red label="Login" onPress={this.onLogin}/>
+              <Button link text70 red label="Sign Up" marginT-20 onPress={this.onSignup}/>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+
+        )}
       </View>
 
     );
