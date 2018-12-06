@@ -1,7 +1,9 @@
 # finalproject
 final project
-https://img.shields.io/badge/Made%20with-React%20Native-blue.svg
-https://img.shields.io/node/v/:packageName.svg
+
+![React Native Shield](https://img.shields.io/badge/Made%20with-React%20Native-blue.svg)
+
+![Node Shield](https://img.shields.io/node/v/:packageName.svg)
 
 __Directions__
 1) clone repository and cd into the directory
