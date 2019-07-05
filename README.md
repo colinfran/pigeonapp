@@ -1,5 +1,5 @@
-# finalproject
-final project
+# pigeonapp
+Report Disasters and Emergencies Around You. For iOS and Android.
 
 ![React Native Shield](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey.svg)
 ![React Native Shield](https://img.shields.io/badge/Made%20with-React%20Native-blue.svg)
