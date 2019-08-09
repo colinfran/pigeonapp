@@ -6,11 +6,12 @@ import color from 'color';
 
 import TouchableRipple from './TouchableRipple';
 import Icon from './Icon';
+import CrossFadeIcon from './CrossFadeIcon';
 import { withTheme } from '../core/theming';
 import type { IconSource } from './Icon';
-import type { Theme } from '../../types';
+import type { Theme, $RemoveChildren } from '../types';
 
-type Props = {
+type Props = $RemoveChildren<typeof TouchableRipple> & {|
   /**
    * Icon to display.
    */
@@ -28,6 +29,10 @@ type Props = {
    */
   disabled?: boolean,
   /**
+   * Whether an icon change is animated.
+   */
+  animated?: boolean,
+  /**
    * Accessibility label for the button. This is read by the screen reader when the user taps the button.
    */
   accessibilityLabel?: string,
@@ -40,7 +45,7 @@ type Props = {
    * @optional
    */
   theme: Theme,
-};
+|};
 
 /**
  * An icon button is a button which displays only an icon without a label.
@@ -80,6 +85,7 @@ const IconButton = ({
   accessibilityLabel,
   disabled,
   onPress,
+  animated = false,
   theme,
   style,
   ...rest
@@ -90,10 +96,12 @@ const IconButton = ({
     .alpha(0.32)
     .rgb()
     .string();
+  const IconComponent = animated ? CrossFadeIcon : Icon;
 
   return (
     <TouchableRipple
       borderless
+      centered
       onPress={onPress}
       rippleColor={rippleColor}
       style={[styles.container, disabled && styles.disabled, style]}
@@ -111,7 +119,7 @@ const IconButton = ({
       {...rest}
     >
       <View>
-        <Icon color={iconColor} source={icon} size={size} />
+        <IconComponent color={iconColor} source={icon} size={size} />
       </View>
     </TouchableRipple>
   );
@@ -125,6 +133,7 @@ const styles = StyleSheet.create({
         margin: 10,
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'visible',
       }
     : {
         borderRadius: 36 / 2,
@@ -133,6 +142,7 @@ const styles = StyleSheet.create({
         margin: 6,
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'visible',
       },
   disabled: {
     opacity: 0.32,

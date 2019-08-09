@@ -1,7 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
-import { Image, Text, StyleSheet, I18nManager } from 'react-native';
+import { Image, Text, StyleSheet, I18nManager, Platform } from 'react-native';
 import type { ImageSource } from 'react-native/Libraries/Image/ImageSource';
 
 let MaterialIcons;
@@ -10,22 +10,45 @@ try {
   // Optionally require vector-icons
   MaterialIcons = require('react-native-vector-icons/MaterialIcons').default;
 } catch (e) {
-  MaterialIcons = ({ name, color, size, ...rest }) => {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `Tried to use the icon '${name}' in a component from 'react-native-paper', but 'react-native-vector-icons' is not installed. To remove this warning, install 'react-native-vector-icons' or use another method to specify icon: https://callstack.github.io/react-native-paper/icons.html.`
-    );
+  if (global.__expo && global.__expo.Icon && global.__expo.Icon.MaterialIcons) {
+    // Snack doesn't properly bundle vector icons from subpath
+    // Use icons from the __expo global if available
+    MaterialIcons = global.__expo.Icon.MaterialIcons;
+  } else {
+    let isErrorLogged = false;
 
-    return (
-      <Text
-        {...rest}
-        style={[styles.icon, { color, fontSize: size }]}
-        pointerEvents="none"
-      >
-        □
-      </Text>
-    );
-  };
+    // Fallback component for icons
+    MaterialIcons = ({ name, color, size, ...rest }) => {
+      /* eslint-disable no-console */
+
+      if (!isErrorLogged) {
+        if (
+          !/(Cannot find module|Module not found|Cannot resolve module)/.test(
+            e.message
+          )
+        ) {
+          console.error(e);
+        }
+
+        console.warn(
+          `Tried to use the icon '${name}' in a component from 'react-native-paper', but 'react-native-vector-icons' could not be loaded.`,
+          `To remove this warning, try installing 'react-native-vector-icons' or use another method to specify icon: https://callstack.github.io/react-native-paper/icons.html.`
+        );
+
+        isErrorLogged = true;
+      }
+
+      return (
+        <Text
+          {...rest}
+          style={[styles.icon, { color, fontSize: size }]}
+          pointerEvents="none"
+        >
+          □
+        </Text>
+      );
+    };
+  }
 }
 
 type IconSourceBase = string | ImageSource;
@@ -51,7 +74,12 @@ const isImageSource = (source: any) =>
     (Object.prototype.hasOwnProperty.call(source, 'uri') &&
       typeof source.uri === 'string')) ||
   // source is a module, e.g. - require('image')
-  typeof source === 'number';
+  typeof source === 'number' ||
+  // image url on web
+  (Platform.OS === 'web' &&
+    typeof source === 'string' &&
+    (source.startsWith('data:image') ||
+      /\.(bmp|jpg|jpeg|png|gif|svg)$/.test(source)));
 
 const getIconId = (source: any) => {
   if (
@@ -86,25 +114,18 @@ const Icon = ({ source, color, size, ...rest }: Props) => {
       ? source.source
       : source;
 
-  if (typeof s === 'string') {
-    return (
-      <MaterialIcons
-        {...rest}
-        name={s}
-        color={color}
-        size={size}
-        style={[
-          {
-            transform: [{ scaleX: direction === 'rtl' ? -1 : 1 }],
-          },
-          styles.icon,
-        ]}
-        pointerEvents="none"
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      />
-    );
-  } else if (isImageSource(s)) {
+  const accessibilityProps =
+    Platform.OS === 'web'
+      ? ({
+          role: 'img',
+          focusable: false,
+        }: any)
+      : {
+          accessibilityElementsHidden: true,
+          importantForAccessibility: 'no-hide-descendants',
+        };
+
+  if (isImageSource(s)) {
     return (
       <Image
         {...rest}
@@ -120,12 +141,28 @@ const Icon = ({ source, color, size, ...rest }: Props) => {
             resizeMode: 'contain',
           },
         ]}
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
+        {...accessibilityProps}
+      />
+    );
+  } else if (typeof s === 'string') {
+    return (
+      <MaterialIcons
+        {...rest}
+        name={s}
+        color={color}
+        size={size}
+        style={[
+          {
+            transform: [{ scaleX: direction === 'rtl' ? -1 : 1 }],
+          },
+          styles.icon,
+        ]}
+        pointerEvents="none"
+        {...accessibilityProps}
       />
     );
   } else if (typeof s === 'function') {
-    return s({ color, size });
+    return s({ color, size, direction });
   }
 
   return null;

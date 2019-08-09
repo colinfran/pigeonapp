@@ -7,7 +7,7 @@ import ProgressBarComponent from './ProgressBarComponent';
 import { withTheme } from '../../core/theming';
 import type { Theme } from '../../types';
 
-type Props = {
+type Props = {|
   /**
    * Progress value (between 0 and 1).
    */
@@ -21,7 +21,7 @@ type Props = {
    * @optional
    */
   theme: Theme,
-};
+|};
 
 /**
  * Progress bar is an indicator used to present progress of some activity in the app.
@@ -33,7 +33,7 @@ type Props = {
  * ## Usage
  * ```js
  * import * as React from 'react';
- * import { ProgressBar } from 'react-native-paper';
+ * import { ProgressBar, Colors } from 'react-native-paper';
  *
  * const MyComponent = () => (
  *   <ProgressBar progress={0.5} color={Colors.red800} />
@@ -53,11 +53,8 @@ class ProgressBar extends React.Component<Props> {
 
     return (
       <ProgressBarComponent
-        styleAttr="Horizontal"
-        indeterminate={false}
         progress={progress}
         progressTintColor={tintColor}
-        color={tintColor}
         style={[styles.progressBarHeight, style]}
         trackTintColor={trackTintColor}
       />

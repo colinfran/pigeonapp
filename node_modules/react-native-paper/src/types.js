@@ -1,5 +1,7 @@
 /* @flow */
 
+import * as React from 'react';
+
 export type Theme = {
   dark: boolean,
   roundness: number,
@@ -13,6 +15,7 @@ export type Theme = {
     disabled: string,
     placeholder: string,
     backdrop: string,
+    notification: string,
   },
   fonts: {
     regular: string,
@@ -27,3 +30,10 @@ export type ThemeShape = $Shape<{
   colors: $Shape<$PropertyType<Theme, 'colors'>>,
   fonts: $Shape<$PropertyType<Theme, 'fonts'>>,
 }>;
+
+export type $RemoveChildren<T> = $Diff<
+  React.ElementConfig<T>,
+  { children: any }
+>;
+
+export type EllipsizeProp = 'head' | 'middle' | 'tail' | 'clip';

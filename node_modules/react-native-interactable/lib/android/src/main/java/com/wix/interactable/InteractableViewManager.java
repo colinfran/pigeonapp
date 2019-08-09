@@ -122,9 +122,9 @@ public class InteractableViewManager extends ViewGroupManager<InteractableView> 
         view.setAlertAreas(RNConvert.interactablePoints(alertAreas));
     }
 
-    @ReactProp(name = "dragWithSprings")
-    public void setDrag(InteractableView view, @Nullable ReadableMap dragWithSprings) {
-        view.setDragWithSprings(RNConvert.interactableDrag(dragWithSprings));
+    @ReactProp(name = "dragWithSpring")
+    public void setDrag(InteractableView view, @Nullable ReadableMap dragWithSpring) {
+        view.setDragWithSpring(RNConvert.interactableDrag(dragWithSpring));
     }
 
     @ReactProp(name = "dragToss")
@@ -158,6 +158,7 @@ public class InteractableViewManager extends ViewGroupManager<InteractableView> 
     public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
         return MapBuilder.<String, Object>builder()
                 .put("onSnap", MapBuilder.of("registrationName", "onSnap"))
+                .put("onSnapStart", MapBuilder.of("registrationName", "onSnapStart"))
                 .put("onAlert", MapBuilder.of("registrationName", "onAlert"))
                 .put("onAnimatedEvent", MapBuilder.of("registrationName", "onAnimatedEvent"))
                 .put("onDrag", MapBuilder.of("registrationName", "onDrag"))
@@ -177,6 +178,11 @@ public class InteractableViewManager extends ViewGroupManager<InteractableView> 
         @Override
         public void onSnap(int indexOfSnapPoint, String snapPointId) {
             eventDispatcher.dispatchEvent(new Events.OnSnapEvent(interactableView.getId(), indexOfSnapPoint, snapPointId));
+        }
+
+        @Override
+        public void onSnapStart(int indexOfSnapPoint, String snapPointId) {
+            eventDispatcher.dispatchEvent(new Events.OnSnapStartEvent(interactableView.getId(), indexOfSnapPoint, snapPointId));
         }
 
         @Override
@@ -200,4 +206,3 @@ public class InteractableViewManager extends ViewGroupManager<InteractableView> 
         }
     }
 }
-

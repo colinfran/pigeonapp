@@ -1,7 +1,12 @@
 /* @flow */
 
 import * as React from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Platform,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import color from 'color';
 
 import Text from '../Typography/Text';
@@ -9,11 +14,11 @@ import Text from '../Typography/Text';
 import { withTheme } from '../../core/theming';
 import { black } from '../../styles/colors';
 
-import type { Theme } from '../../types';
+import type { Theme, $RemoveChildren } from '../../types';
 
-type Props = {
+type Props = $RemoveChildren<typeof View> & {|
   /**
-   * CUstom color for the text.
+   * Custom color for the text.
    */
   color?: string,
   /**
@@ -32,12 +37,16 @@ type Props = {
    * Style for the subtitle.
    */
   subtitleStyle?: any,
+  /**
+   * Function to execute on press.
+   */
+  onPress?: () => mixed,
   style?: any,
   /**
    * @optional
    */
   theme: Theme,
-};
+|};
 
 /**
  * A component used to display a title and optional subtitle in a appbar.
@@ -50,10 +59,12 @@ class AppbarContent extends React.Component<Props> {
       color: titleColor = black,
       subtitle,
       subtitleStyle,
+      onPress,
       style,
       titleStyle,
       theme,
       title,
+      ...rest
     } = this.props;
     const { fonts } = theme;
 
@@ -63,31 +74,36 @@ class AppbarContent extends React.Component<Props> {
       .string();
 
     return (
-      <View style={[styles.container, style]}>
-        <Text
-          style={[
-            {
-              color: titleColor,
-              fontFamily: Platform.OS === 'ios' ? fonts.regular : fonts.medium,
-            },
-            styles.title,
-            titleStyle,
-          ]}
-          numberOfLines={1}
-          accessibilityTraits="header"
-          accessibilityRole="header"
-        >
-          {title}
-        </Text>
-        {subtitle ? (
+      <TouchableWithoutFeedback onPress={onPress}>
+        <View style={[styles.container, style]} {...rest}>
           <Text
-            style={[styles.subtitle, { color: subtitleColor }, subtitleStyle]}
+            style={[
+              {
+                color: titleColor,
+                fontFamily:
+                  Platform.OS === 'ios' ? fonts.regular : fonts.medium,
+              },
+              styles.title,
+              titleStyle,
+            ]}
             numberOfLines={1}
+            accessibilityTraits="header"
+            accessibilityRole={
+              Platform.OS === 'web' ? ('heading': any) : 'header'
+            }
           >
-            {subtitle}
+            {title}
           </Text>
-        ) : null}
-      </View>
+          {subtitle ? (
+            <Text
+              style={[styles.subtitle, { color: subtitleColor }, subtitleStyle]}
+              numberOfLines={1}
+            >
+              {subtitle}
+            </Text>
+          ) : null}
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }

@@ -5,9 +5,9 @@ import { View, StyleSheet } from 'react-native';
 import PortalManager from './PortalManager';
 import createReactContext, { type Context } from 'create-react-context';
 
-type Props = {
+type Props = {|
   children: React.Node,
-};
+|};
 
 type Operation =
   | { type: 'mount', key: number, children: React.Node }
@@ -32,13 +32,14 @@ export const PortalContext: Context<PortalMethods> = createReactContext(
  * ## Usage
  * ```js
  * import * as React from 'react';
- * import { Portal, StyleSheet } from 'react-native-paper';
+ * import { Text } from 'react-native';
+ * import { Portal } from 'react-native-paper';
  *
  * export default class MyComponent extends React.Component {
  *   render() {
  *     return (
  *       <Portal.Host>
- *         <App />
+ *         <Text>Content of the app</Text>
  *       </Portal.Host>
  *     );
  *   }

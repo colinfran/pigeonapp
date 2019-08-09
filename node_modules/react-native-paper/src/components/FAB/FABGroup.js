@@ -7,6 +7,7 @@ import {
   Animated,
   TouchableWithoutFeedback,
   StatusBar,
+  SafeAreaView,
 } from 'react-native';
 import { polyfill } from 'react-lifecycles-compat';
 import color from 'color';
@@ -17,7 +18,7 @@ import { withTheme } from '../../core/theming';
 import type { Theme } from '../../types';
 import type { IconSource } from '../Icon';
 
-type Props = {
+type Props = {|
   /**
    * Action items to display in the form of a speed dial.
    * An action item should contain the following properties:
@@ -29,7 +30,7 @@ type Props = {
    * - `onPress`: callback that is called when `FAB` is pressed (required)
    */
   actions: Array<{
-    icon: string,
+    icon: IconSource,
     label?: string,
     color?: string,
     accessibilityLabel?: string,
@@ -63,15 +64,23 @@ type Props = {
    */
   onStateChange: (state: { open: boolean }) => mixed,
   /**
+   * Whether `FAB` is currently visible.
+   */
+  visible: boolean,
+  /**
    * Style for the group. You can use it to pass additional styles if you need.
-   * For example, you can set an additional margin if you have a tab bar at the bottom.
+   * For example, you can set an additional padding if you have a tab bar at the bottom.
    */
   style?: any,
+  /**
+   * Style for the FAB. It allows to pass the FAB button styles, such as backgroundColor.
+   */
+  fabStyle?: any,
   /**
    * @optional
    */
   theme: Theme,
-};
+|};
 
 type State = {
   backdrop: Animated.Value,
@@ -194,6 +203,8 @@ class FABGroup extends React.Component<Props, State> {
       accessibilityLabel,
       theme,
       style,
+      fabStyle,
+      visible,
     } = this.props;
     const { colors } = theme;
 
@@ -206,7 +217,6 @@ class FABGroup extends React.Component<Props, State> {
     const backdropOpacity = open
       ? this.state.backdrop.interpolate({
           inputRange: [0, 0.5, 1],
-          // $FlowFixMe
           outputRange: [0, 1, 1],
         })
       : this.state.backdrop;
@@ -217,7 +227,6 @@ class FABGroup extends React.Component<Props, State> {
         open
           ? opacity.interpolate({
               inputRange: [0, 1],
-              // $FlowFixMe
               outputRange: [0.8, 1],
             })
           : 1
@@ -238,23 +247,22 @@ class FABGroup extends React.Component<Props, State> {
             ]}
           />
         </TouchableWithoutFeedback>
-        <View pointerEvents={open ? 'box-none' : 'none'}>
-          {actions.map((it, i) => (
-            <Animated.View
-                key={i} //eslint-disable-line
-              style={[
-                {
-                  opacity: opacities[i],
-                },
-              ]}
-              pointerEvents="box-none"
-            >
-              <View style={styles.item} pointerEvents="box-none">
+        <SafeAreaView pointerEvents="box-none" style={styles.safeArea}>
+          <View pointerEvents={open ? 'box-none' : 'none'}>
+            {actions.map((it, i) => (
+              <View
+                key={i} // eslint-disable-line react/no-array-index-key
+                style={styles.item}
+                pointerEvents="box-none"
+              >
                 {it.label && (
                   <Card
                     style={[
                       styles.label,
-                      { transform: [{ scale: scales[i] }] },
+                      {
+                        transform: [{ scale: scales[i] }],
+                        opacity: opacities[i],
+                      },
                     ]}
                     onPress={() => {
                       it.onPress();
@@ -279,6 +287,7 @@ class FABGroup extends React.Component<Props, State> {
                   style={[
                     {
                       transform: [{ scale: scales[i] }],
+                      opacity: opacities[i],
                       backgroundColor: theme.colors.surface,
                     },
                     it.style,
@@ -297,22 +306,23 @@ class FABGroup extends React.Component<Props, State> {
                   accessibilityRole="button"
                 />
               </View>
-            </Animated.View>
-          ))}
-        </View>
-        <FAB
-          onPress={() => {
-            onPress && onPress();
-            this._toggle();
-          }}
-          icon={icon}
-          color={this.props.color}
-          accessibilityLabel={accessibilityLabel}
-          accessibilityTraits="button"
-          accessibilityComponentType="button"
-          accessibilityRole="button"
-          style={styles.fab}
-        />
+            ))}
+          </View>
+          <FAB
+            onPress={() => {
+              onPress && onPress();
+              this._toggle();
+            }}
+            icon={icon}
+            color={this.props.color}
+            accessibilityLabel={accessibilityLabel}
+            accessibilityTraits="button"
+            accessibilityComponentType="button"
+            accessibilityRole="button"
+            style={[styles.fab, fabStyle]}
+            visible={visible}
+          />
+        </SafeAreaView>
       </View>
     );
   }
@@ -323,9 +333,11 @@ polyfill(FABGroup);
 export default withTheme(FABGroup);
 
 const styles = StyleSheet.create({
+  safeArea: {
+    alignItems: 'flex-end',
+  },
   container: {
     ...StyleSheet.absoluteFillObject,
-    alignItems: 'flex-end',
     justifyContent: 'flex-end',
   },
   fab: {

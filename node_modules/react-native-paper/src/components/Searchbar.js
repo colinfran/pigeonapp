@@ -1,8 +1,7 @@
 /* @flow */
 
 import * as React from 'react';
-import { StyleSheet, TextInput } from 'react-native';
-
+import { StyleSheet, TextInput, I18nManager } from 'react-native';
 import color from 'color';
 import IconButton from './IconButton';
 import Surface from './Surface';
@@ -10,7 +9,7 @@ import { withTheme } from '../core/theming';
 import type { Theme } from '../types';
 import type { IconSource } from './Icon';
 
-type Props = {
+type Props = React.ElementConfig<typeof TextInput> & {|
   /**
    * Hint text shown when the input is empty.
    */
@@ -31,12 +30,25 @@ type Props = {
    * Callback to execute if we want the left icon to act as button.
    */
   onIconPress?: () => mixed,
+  /**
+   * Set style of the TextInput component inside the searchbar
+   */
+  inputStyle?: any,
   style?: any,
+
   /**
    * @optional
    */
   theme: Theme,
-};
+  /**
+   * Custom color for icon, default will be derived from theme
+   */
+  iconColor?: string,
+  /**
+   * Custom icon for clear button, default will be icon close
+   */
+  clearIcon?: IconSource,
+|};
 
 /**
  * Searchbar is a simple input box where users can type search queries.
@@ -74,41 +86,41 @@ class Searchbar extends React.Component<Props> {
     this.props.onChangeText && this.props.onChangeText('');
   };
 
-  _root: TextInput;
+  _root: ?TextInput;
 
   /**
    * @internal
    */
   setNativeProps(...args) {
-    return this._root.setNativeProps(...args);
+    return this._root && this._root.setNativeProps(...args);
   }
 
   /**
    * Returns `true` if the input is currently focused, `false` otherwise.
    */
   isFocused() {
-    return this._root.isFocused();
+    return this._root && this._root.isFocused();
   }
 
   /**
    * Removes all text from the TextInput.
    */
   clear() {
-    return this._root.clear();
+    return this._root && this._root.clear();
   }
 
   /**
    * Focuses the input.
    */
   focus() {
-    return this._root.focus();
+    return this._root && this._root.focus();
   }
 
   /**
    * Removes focus from the input.
    */
   blur() {
-    return this._root.blur();
+    return this._root && this._root.blur();
   }
 
   render() {
@@ -119,16 +131,22 @@ class Searchbar extends React.Component<Props> {
       value,
       theme,
       style,
+      iconColor: customIconColor,
+      clearIcon,
+      inputStyle,
       ...rest
     } = this.props;
-    const { colors, roundness, dark } = theme;
+    const { colors, roundness, dark, fonts } = theme;
     const textColor = colors.text;
-    const iconColor = dark
-      ? textColor
-      : color(textColor)
-          .alpha(0.54)
-          .rgb()
-          .string();
+    const fontFamily = fonts.regular;
+    const iconColor =
+      customIconColor ||
+      (dark
+        ? textColor
+        : color(textColor)
+            .alpha(0.54)
+            .rgb()
+            .string());
     const rippleColor = color(textColor)
       .alpha(0.32)
       .rgb()
@@ -150,12 +168,13 @@ class Searchbar extends React.Component<Props> {
           icon={icon || 'search'}
         />
         <TextInput
-          style={[styles.input, { color: textColor }]}
+          style={[styles.input, { color: textColor, fontFamily }, inputStyle]}
           placeholder={placeholder || ''}
           placeholderTextColor={colors.placeholder}
           selectionColor={colors.primary}
           underlineColorAndroid="transparent"
           returnKeyType="search"
+          keyboardAppearance={dark ? 'dark' : 'light'}
           accessibilityTraits="search"
           accessibilityRole="search"
           ref={c => {
@@ -164,18 +183,17 @@ class Searchbar extends React.Component<Props> {
           value={value}
           {...rest}
         />
-        {value ? (
-          <IconButton
-            borderless
-            color={iconColor}
-            rippleColor={rippleColor}
-            onPress={this._handleClearPress}
-            icon="close"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
-            accessibilityRole="button"
-          />
-        ) : null}
+        <IconButton
+          borderless
+          disabled={!value}
+          color={value ? iconColor : 'rgba(255, 255, 255, 0)'}
+          rippleColor={rippleColor}
+          onPress={this._handleClearPress}
+          icon={clearIcon || 'close'}
+          accessibilityTraits="button"
+          accessibilityComponentType="button"
+          accessibilityRole="button"
+        />
       </Surface>
     );
   }
@@ -191,6 +209,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingLeft: 8,
     alignSelf: 'stretch',
+    textAlign: I18nManager.isRTL ? 'right' : 'left',
+    minWidth: 0,
   },
 });
 

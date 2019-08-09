@@ -5,7 +5,7 @@
 #import <React/RCTUIManagerObserverCoordinator.h>
 #import <React/RCTUIManagerUtils.h>
 
-@interface RNSScreenContainerManager : RCTViewManager <RCTUIManagerObserver>
+@interface RNSScreenContainerManager : RCTViewManager
 
 - (void)markUpdated:(RNSScreenContainerView *)screen;
 
@@ -17,7 +17,7 @@
 @property (nonatomic, retain) NSMutableSet<RNSScreenView *> *activeScreens;
 @property (nonatomic, retain) NSMutableArray<RNSScreenView *> *reactSubviews;
 
-- (void)updateConatiner;
+- (void)updateContainer;
 
 @end
 
@@ -42,9 +42,8 @@
 - (void)markChildUpdated
 {
   // We want 'updateContainer' to be executed on main thread after all enqueued operations in
-  // uimanager are complete. In order to achieve that we enqueue call on UIManagerQueue from which
-  // we enqueue call on the main queue. This seems to be working ok in all the cases I've tried but
-  // there is a chance it is not the correct way to do that.
+  // uimanager are complete. For that we collect all marked containers in manager class and enqueue
+  // operation on ui thread that should run once all the updates are completed.
   if (!_needUpdate) {
     _needUpdate = YES;
     [_manager markUpdated:self];
@@ -87,37 +86,65 @@
 - (void)updateContainer
 {
   _needUpdate = NO;
-  BOOL activeScreenChanged = NO;
+  BOOL activeScreenRemoved = NO;
   // remove screens that are no longer active
   NSMutableSet *orphaned = [NSMutableSet setWithSet:_activeScreens];
   for (RNSScreenView *screen in _reactSubviews) {
     if (!screen.active && [_activeScreens containsObject:screen]) {
-      activeScreenChanged = YES;
+      activeScreenRemoved = YES;
       [self detachScreen:screen];
     }
     [orphaned removeObject:screen];
   }
   for (RNSScreenView *screen in orphaned) {
-    activeScreenChanged = YES;
+    activeScreenRemoved = YES;
     [self detachScreen:screen];
   }
 
-  // add new screens in order they are placed in subviews array
+  // detect if new screen is going to be activated
+  BOOL activeScreenAdded = NO;
   for (RNSScreenView *screen in _reactSubviews) {
     if (screen.active && ![_activeScreens containsObject:screen]) {
-      activeScreenChanged = YES;
-      [self attachScreen:screen];
-    } else if (screen.active) {
-      // if the view was already there we move it to "front" so that it is in the right
-      // order accoring to the subviews array
-      [_controller.view bringSubviewToFront:screen.controller.view];
+      activeScreenAdded = YES;
     }
   }
 
-  if (activeScreenChanged) {
+  // if we are adding new active screen, we perform remounting of all already marked as active
+  // this is done to mimick the effect UINavigationController has when willMoveToWindow:nil is
+  // triggered before the animation starts
+  if (activeScreenAdded) {
+    for (RNSScreenView *screen in _reactSubviews) {
+      if (screen.active && [_activeScreens containsObject:screen]) {
+        [self detachScreen:screen];
+        // disable interactions for the duration of transition
+        screen.userInteractionEnabled = NO;
+      }
+    }
+
+    // add new screens in order they are placed in subviews array
+    for (RNSScreenView *screen in _reactSubviews) {
+      if (screen.active) {
+        [self attachScreen:screen];
+      }
+    }
+  }
+
+  // if we are down to one active screen it means the transitioning is over and we want to notify
+  // the transition has finished
+  if ((activeScreenRemoved || activeScreenAdded) && _activeScreens.count == 1) {
+    RNSScreenView *singleActiveScreen = [_activeScreens anyObject];
+    // restore interactions
+    singleActiveScreen.userInteractionEnabled = YES;
+    [singleActiveScreen notifyFinishTransitioning];
+  }
+
+  if ((activeScreenRemoved || activeScreenAdded) && _controller.presentedViewController == nil) {
     // if user has reachability enabled (one hand use) and the window is slided down the below
     // method will force it to slide back up as it is expected to happen with UINavController when
     // we push or pop views.
+    // We only do that if `presentedViewController` is nil, as otherwise it'd mean that modal has
+    // been presented on top of recently changed controller in which case the below method would
+    // dismiss such a modal (e.g., permission modal or alert)
     [_controller dismissViewControllerAnimated:NO completion:nil];
   }
 }
@@ -154,45 +181,17 @@ RCT_EXPORT_MODULE()
 - (void)markUpdated:(RNSScreenContainerView *)screen
 {
   RCTAssertMainQueue();
-  @synchronized(self) {
-    // we need to synchronize write operations so that in didPerformMounting we can reliably
-    // tell if _markedCOntainers is empty or not
-    [_markedContainers addObject:screen];
-  }
-}
-
-#pragma mark - RCTUIManagerObserver
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  [super setBridge:bridge];
-  [self.bridge.uiManager.observerCoordinator addObserver:self];
-}
-
-- (void)invalidate
-{
-  [self.bridge.uiManager.observerCoordinator removeObserver:self];
-}
-
-- (void)uiManagerDidPerformMounting:(__unused RCTUIManager *)manager
-{
-  @synchronized(self) {
-    if ([_markedContainers count] == 0) {
-      // we return early if there are no updated containers. This check needs to be
-      // synchronized as UIThread can modify _markedContainers array
-      return;
-    }
-  }
-  RCTExecuteOnMainQueue(^{
-    for (RNSScreenContainerView *screen in _markedContainers) {
-      [screen updateContainer];
-    }
-    @synchronized(self) {
-      // we only synchronize write operations and not reading in UIThread as UIThread
-      // is the only thread that changes _markedContainers
+  [_markedContainers addObject:screen];
+  if ([_markedContainers count] == 1) {
+    // we enqueue updates to be run on the main queue in order to make sure that
+    // all this updates (new screens attached etc) are executed in one batch
+    RCTExecuteOnMainQueue(^{
+      for (RNSScreenContainerView *container in _markedContainers) {
+        [container updateContainer];
+      }
       [_markedContainers removeAllObjects];
-    }
-  });
+    });
+  }
 }
 
 @end

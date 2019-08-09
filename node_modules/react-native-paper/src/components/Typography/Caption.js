@@ -1,10 +1,10 @@
 /* @flow */
 
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import StyledText from './StyledText';
 
-type Props = {
+type Props = React.ElementConfig<typeof Text> & {
   style?: any,
 };
 
@@ -40,7 +40,7 @@ export default Caption;
 
 const styles = StyleSheet.create({
   text: {
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 20,
     marginVertical: 2,
   },

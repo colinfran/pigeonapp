@@ -1,15 +1,16 @@
 /* @flow */
 
 import * as React from 'react';
-import { StyleSheet, Animated, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Animated, SafeAreaView } from 'react-native';
 
 import Button from './Button';
+import Surface from './Surface';
 import Text from './Typography/Text';
 import { withTheme } from '../core/theming';
 import { white } from '../styles/colors';
 import type { Theme } from '../types';
 
-type Props = {
+type Props = {|
   /**
    * Whether the Snackbar is currently visible.
    */
@@ -21,6 +22,7 @@ type Props = {
    */
   action?: {
     label: string,
+    accessibilityLabel?: string,
     onPress: () => mixed,
   },
   /**
@@ -40,7 +42,7 @@ type Props = {
    * @optional
    */
   theme: Theme,
-};
+|};
 
 type State = {
   opacity: Animated.Value,
@@ -128,6 +130,12 @@ class Snackbar extends React.Component<Props, State> {
     hidden: !this.props.visible,
   };
 
+  componentDidMount() {
+    if (this.props.visible) {
+      this._show();
+    }
+  }
+
   componentDidUpdate(prevProps) {
     if (prevProps.visible !== this.props.visible) {
       this._toggle();
@@ -155,9 +163,17 @@ class Snackbar extends React.Component<Props, State> {
       toValue: 1,
       duration: 200,
       useNativeDriver: true,
-    }).start(() => {
-      const { duration } = this.props;
-      this._hideTimeout = setTimeout(this.props.onDismiss, duration);
+    }).start(({ finished }) => {
+      if (finished) {
+        const { duration } = this.props;
+        const isInfinity =
+          duration === Number.POSITIVE_INFINITY ||
+          duration === Number.NEGATIVE_INFINITY;
+
+        if (finished && !isInfinity) {
+          this._hideTimeout = setTimeout(this.props.onDismiss, duration);
+        }
+      }
     });
   };
 
@@ -168,7 +184,11 @@ class Snackbar extends React.Component<Props, State> {
       toValue: 0,
       duration: 100,
       useNativeDriver: true,
-    }).start(() => this.setState({ hidden: true }));
+    }).start(({ finished }) => {
+      if (finished) {
+        this.setState({ hidden: true });
+      }
+    });
   };
 
   _hideTimeout: TimeoutID;
@@ -176,50 +196,54 @@ class Snackbar extends React.Component<Props, State> {
   render() {
     const { children, visible, action, onDismiss, theme, style } = this.props;
     const { colors, roundness } = theme;
+
+    if (this.state.hidden) {
+      return null;
+    }
+
     return (
       <SafeAreaView pointerEvents="box-none" style={styles.wrapper}>
-        <Animated.View
+        <Surface
           pointerEvents="box-none"
           accessibilityLiveRegion="polite"
-          style={{
-            opacity: this.state.opacity,
-            transform: [
-              {
-                scale: visible
-                  ? this.state.opacity.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.9, 1],
-                    })
-                  : 1,
-              },
-            ],
-          }}
+          style={[
+            styles.container,
+            {
+              borderRadius: roundness,
+              opacity: this.state.opacity,
+              transform: [
+                {
+                  scale: visible
+                    ? this.state.opacity.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.9, 1],
+                      })
+                    : 1,
+                },
+              ],
+            },
+            style,
+          ]}
         >
-          {!this.state.hidden ? (
-            <View
-              pointerEvents="box-none"
-              style={[styles.container, { borderRadius: roundness }, style]}
+          <Text style={[styles.content, { marginRight: action ? 0 : 16 }]}>
+            {children}
+          </Text>
+          {action ? (
+            <Button
+              accessibilityLabel={action.accessibilityLabel}
+              onPress={() => {
+                action.onPress();
+                onDismiss();
+              }}
+              style={styles.button}
+              color={colors.accent}
+              compact
+              mode="text"
             >
-              <Text style={[styles.content, { marginRight: action ? 0 : 16 }]}>
-                {children}
-              </Text>
-              {action ? (
-                <Button
-                  onPress={() => {
-                    action.onPress();
-                    onDismiss();
-                  }}
-                  style={styles.button}
-                  color={colors.accent}
-                  compact
-                  mode="text"
-                >
-                  {action.label.toUpperCase()}
-                </Button>
-              ) : null}
-            </View>
+              {action.label.toUpperCase()}
+            </Button>
           ) : null}
-        </Animated.View>
+        </Surface>
       </SafeAreaView>
     );
   }

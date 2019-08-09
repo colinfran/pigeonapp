@@ -3,9 +3,9 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-type Props = {
+type Props = React.ElementConfig<typeof View> & {
   /**
-   * Content of the `CardActions`.
+   * Items inside the `CardActions`.
    */
   children: React.Node,
   style?: any,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    padding: 4,
+    padding: 8,
   },
 });
 

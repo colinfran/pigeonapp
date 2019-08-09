@@ -9,7 +9,7 @@ import type { Theme } from '../types';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-type Props = {
+type Props = React.ElementConfig<typeof Text> & {
   /**
    * Type of the helper text.
    */
@@ -44,6 +44,7 @@ type State = {
  * ## Usage
  * ```js
  * import * as React from 'react';
+ * import { View } from 'react-native';
  * import { HelperText, TextInput } from 'react-native-paper';
  *
  * export default class MyComponent extends React.Component {
@@ -82,17 +83,20 @@ class HelperText extends React.PureComponent<Props, State> {
     textHeight: 0,
   };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.visible !== this.props.visible) {
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevProps.visible !== this.props.visible ||
+      prevState.textHeight !== this.state.textHeight
+    ) {
       if (this.props.visible) {
-        this._animateFocus();
+        this._showText();
       } else {
-        this._animateBlur();
+        this._hideText();
       }
     }
   }
 
-  _animateFocus = () => {
+  _showText = () => {
     Animated.timing(this.state.shown, {
       toValue: 1,
       duration: 150,
@@ -100,7 +104,7 @@ class HelperText extends React.PureComponent<Props, State> {
     }).start();
   };
 
-  _animateBlur = () => {
+  _hideText = () => {
     Animated.timing(this.state.shown, {
       toValue: 0,
       duration: 180,
@@ -108,13 +112,15 @@ class HelperText extends React.PureComponent<Props, State> {
     }).start();
   };
 
-  _handleTextLayout = e =>
+  _handleTextLayout = e => {
+    this.props.onLayout && this.props.onLayout(e);
     this.setState({
       textHeight: e.nativeEvent.layout.height,
     });
+  };
 
   render() {
-    const { style, type, visible, theme } = this.props;
+    const { style, type, visible, theme, onLayout, ...rest } = this.props;
     const { colors, dark } = theme;
 
     const textColor =
@@ -147,6 +153,7 @@ class HelperText extends React.PureComponent<Props, State> {
           },
           style,
         ]}
+        {...rest}
       >
         {this.props.children}
       </AnimatedText>

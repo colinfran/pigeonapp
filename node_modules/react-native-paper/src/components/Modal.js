@@ -10,10 +10,11 @@ import {
   BackHandler,
 } from 'react-native';
 import { polyfill } from 'react-lifecycles-compat';
+import Surface from './Surface';
 import { withTheme } from '../core/theming';
 import type { Theme } from '../types';
 
-type Props = {
+type Props = {|
   /**
    * Determines whether clicking outside the modal dismiss it.
    */
@@ -21,7 +22,7 @@ type Props = {
   /**
    * Callback that is called when the user dismisses the modal.
    */
-  onDismiss: () => mixed,
+  onDismiss?: () => mixed,
   /**
    * Determines Whether the modal is visible.
    */
@@ -31,10 +32,14 @@ type Props = {
    */
   children: React.Node,
   /**
+   * Style for the content of the modal
+   */
+  contentContainerStyle?: any,
+  /**
    * @optional
    */
   theme: Theme,
-};
+|};
 
 type State = {
   opacity: Animated.Value,
@@ -48,7 +53,7 @@ type State = {
  * ## Usage
  * ```js
  * import * as React from 'react';
- * import { Modal, Portal, Text } from 'react-native-paper';
+ * import { Modal, Portal, Text, Button, Provider } from 'react-native-paper';
  *
  * export default class MyComponent extends React.Component {
  *   state = {
@@ -61,11 +66,19 @@ type State = {
  *   render() {
  *     const { visible } = this.state;
  *     return (
- *       <Portal>
- *         <Modal visible={visible} onDismiss={this._hideModal}>
- *           <Text>Example Modal</Text>
- *         </Modal>
- *       </Portal>
+ *      <Provider>
+ *        <Portal>
+ *          <Modal visible={visible} onDismiss={this._hideModal}>
+ *            <Text>Example Modal</Text>
+ *          </Modal>
+ *          <Button
+ *            style={{ marginTop: 30 }}
+ *            onPress={this._showModal}
+ *          >
+ *            Show
+ *          </Button>
+ *        </Portal>
+ *      </Provider>
  *     );
  *   }
  * }
@@ -111,11 +124,13 @@ class Modal extends React.Component<Props, State> {
   };
 
   _showModal = () => {
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBack);
     BackHandler.addEventListener('hardwareBackPress', this._handleBack);
     Animated.timing(this.state.opacity, {
       toValue: 1,
       duration: 280,
       easing: Easing.ease,
+      useNativeDriver: true,
     }).start();
   };
 
@@ -125,7 +140,11 @@ class Modal extends React.Component<Props, State> {
       toValue: 0,
       duration: 280,
       easing: Easing.ease,
-    }).start(() => {
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (!finished) {
+        return;
+      }
       if (this.props.visible && this.props.onDismiss) {
         this.props.onDismiss();
       }
@@ -139,26 +158,41 @@ class Modal extends React.Component<Props, State> {
     });
   };
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBack);
+  }
+
   render() {
     if (!this.state.rendered) return null;
 
-    const { children, dismissable, theme } = this.props;
+    const { children, dismissable, theme, contentContainerStyle } = this.props;
     const { colors } = theme;
     return (
       <Animated.View
         accessibilityViewIsModal
         accessibilityLiveRegion="polite"
-        style={[{ opacity: this.state.opacity }, StyleSheet.absoluteFill]}
+        style={StyleSheet.absoluteFill}
       >
         <TouchableWithoutFeedback
           onPress={dismissable ? this._hideModal : undefined}
         >
-          <View
-            style={[styles.backdrop, { backgroundColor: colors.backdrop }]}
+          <Animated.View
+            style={[
+              styles.backdrop,
+              { backgroundColor: colors.backdrop, opacity: this.state.opacity },
+            ]}
           />
         </TouchableWithoutFeedback>
-        <View pointerEvents="box-none" style={styles.content}>
-          {children}
+        <View pointerEvents="box-none" style={styles.wrapper}>
+          <Surface
+            style={[
+              { opacity: this.state.opacity },
+              styles.content,
+              contentContainerStyle,
+            ]}
+          >
+            {children}
+          </Surface>
         </View>
       </Animated.View>
     );
@@ -173,8 +207,12 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
   },
-  content: {
+  wrapper: {
     ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+  },
+  content: {
+    backgroundColor: 'transparent',
     justifyContent: 'center',
   },
 });

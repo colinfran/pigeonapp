@@ -3,7 +3,7 @@
 import * as React from 'react';
 import createReactContext, { type Context } from 'create-react-context';
 
-type Props = {
+type Props = {|
   /**
    * Function to execute on selection change.
    */
@@ -16,7 +16,7 @@ type Props = {
    * React elements containing radio buttons.
    */
   children: React.Node,
-};
+|};
 
 type RadioButtonContextType = {
   value: string,
@@ -36,7 +36,7 @@ export const RadioButtonContext: Context<?RadioButtonContextType> = createReactC
  * import { View } from 'react-native';
  * import { RadioButton, Text } from 'react-native-paper';
  *
- * export default class MyComponent extends Component {
+ * export default class MyComponent extends React.Component {
  *   state = {
  *     value: 'first',
  *   };

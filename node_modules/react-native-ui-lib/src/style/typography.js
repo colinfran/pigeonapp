@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {Constants} from '../helpers';
 
+
 const WEIGHT_TYPES = {
   ULIGHT: '100',
   THIN: '200',
@@ -74,6 +75,8 @@ class Typography {
     fontFamily: Constants.isAndroid ? 'sans-serif-light' : undefined,
   };
 
+  keysPattern = this.generateKeysPattern();
+
   /**
    * Load custom set of typographies
    * arguments:
@@ -84,15 +87,40 @@ class Typography {
     _.forEach(typographies, (value, key) => {
       this[key] = value;
     });
+    this.keysPattern = this.generateKeysPattern();
   }
 
   getKeysPattern() {
+    return this.keysPattern;
+  }
+
+  generateKeysPattern() {
     return new RegExp(_.chain(this)
         .keys()
         .map(key => [`${key}`])
         .flatten()
         .join('|')
         .value());
+  }
+
+  // TODO: deprecate
+  async measureWidth(text, typography = Typography.text70, containerWidth = Constants.screenWidth) {
+    const size = await this.measureTextSize(text, typography, containerWidth);
+    if (size) {
+      return size.width;
+    }
+  }
+
+  async measureTextSize(text, typography = Typography.text70, containerWidth = Constants.screenWidth) {
+    const rnTextSize = require('react-native-text-size').default;
+    if (text) {
+      const size = await rnTextSize.measure({
+        text, // text to measure, can include symbols
+        width: containerWidth, // max-width of the "virtual" container
+        ...typography, // RN font specification
+      });
+      return size;
+    }
   }
 }
 
